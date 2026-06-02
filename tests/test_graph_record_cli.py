@@ -3,6 +3,10 @@ from __future__ import annotations
 from tests.route_graph_test_helpers import *
 
 
+def _module_cli(module_name: str) -> list[str]:
+    return [sys.executable, "-m", module_name]
+
+
 class GraphRecordNormalizationTests(unittest.TestCase):
     def test_graph_record_defaults_to_no_periodic_status_logging(self) -> None:
         parser = build_graph_record_parser()
@@ -138,8 +142,7 @@ class CliBehaviorTests(unittest.TestCase):
             )
             result = subprocess.run(
                 [
-                    sys.executable,
-                    str(PROJECT_ROOT / "mission_export.py"),
+                    *_module_cli("route_graph_webui.cli.mission_export"),
                     "--candidate-set",
                     str(candidate_set_path),
                     "--output",
@@ -162,8 +165,7 @@ class CliBehaviorTests(unittest.TestCase):
             write_json_file(graph_path, build_test_square_graph().to_dict())
             result = subprocess.run(
                 [
-                    sys.executable,
-                    str(PROJECT_ROOT / "graph_editor.py"),
+                    *_module_cli("route_graph_webui.cli.graph_editor"),
                     "add-edge",
                     "--graph",
                     str(graph_path),
@@ -221,8 +223,7 @@ class CliBehaviorTests(unittest.TestCase):
 
             result = subprocess.run(
                 [
-                    sys.executable,
-                    str(PROJECT_ROOT / "mission_export.py"),
+                    *_module_cli("route_graph_webui.cli.mission_export"),
                     "--plan",
                     str(plan_path),
                     "--output",
@@ -257,8 +258,7 @@ class CliBehaviorTests(unittest.TestCase):
 
             result = subprocess.run(
                 [
-                    sys.executable,
-                    str(PROJECT_ROOT / "mission_export.py"),
+                    *_module_cli("route_graph_webui.cli.mission_export"),
                     "--graph",
                     str(graph_path),
                     "--start",
@@ -295,8 +295,7 @@ class CliBehaviorTests(unittest.TestCase):
 
             result = subprocess.run(
                 [
-                    sys.executable,
-                    str(PROJECT_ROOT / "mission_export.py"),
+                    *_module_cli("route_graph_webui.cli.mission_export"),
                     "--candidate-set",
                     str(candidate_set_path),
                     "--output-dir",
@@ -329,8 +328,7 @@ class CliBehaviorTests(unittest.TestCase):
 
             result = subprocess.run(
                 [
-                    sys.executable,
-                    str(PROJECT_ROOT / "mission_export.py"),
+                    *_module_cli("route_graph_webui.cli.mission_export"),
                     "--candidate-set",
                     str(candidate_set_path),
                     "--output-dir",
@@ -356,8 +354,7 @@ class CliBehaviorTests(unittest.TestCase):
             )
             result = subprocess.run(
                 [
-                    sys.executable,
-                    str(PROJECT_ROOT / "mission_export.py"),
+                    *_module_cli("route_graph_webui.cli.mission_export"),
                     "--candidate-set",
                     str(candidate_set_path),
                     "--candidate-id",

@@ -1,15 +1,43 @@
 # Source package excludes generated/runtime files.
-webui_frontend/node_modules/
-webui_frontend/dist/
-data/logs/
-data/graphs/
-data/webui_state.json
-data/plans/
-data/missions/
-data/previews/
+
+# Local environment and editor-private files.
+.env
+.env.local
+.env.*.local
+*.local
+.claude/settings.local.json
+
+# Python caches, build outputs, and test artifacts.
 __pycache__/
 **/__pycache__/
 *.py[cod]
 *.egg-info/
-.claude/settings.local.json
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+build/
+dist/
+pip-wheel-metadata/
+
+# Frontend dependencies, build outputs, and tool caches.
+webui_frontend/node_modules/
+webui_frontend/dist/
+webui_frontend/.vite/
+webui_frontend/coverage/
+webui_frontend/.eslintcache
+webui_frontend/npm-debug.log*
+webui_frontend/yarn-debug.log*
+webui_frontend/yarn-error.log*
+webui_frontend/pnpm-debug.log*
+
+# Route Graph WebUI runtime data. Keep repository examples versioned.
+data/*
+!data/examples/
+!data/examples/**
+
+# Local scratch/archive area.
 tools/archive/

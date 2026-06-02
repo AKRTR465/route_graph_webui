@@ -1,5 +1,7 @@
 # route_graph_webui
 
+[中文说明](README.zh-CN.md)
+
 Route Graph WebUI is a local WebUI and CLI toolkit for editing route graphs, planning UAV routes, and exporting replay-compatible mission JSON.
 
 Run commands from this `route_graph_webui/` directory unless noted otherwise.
@@ -120,7 +122,7 @@ python -m route_graph_webui.cli.graph_gui --help
 python -m route_graph_webui.cli.visualize_graph --help
 ```
 
-Six root-level public CLI wrappers remain temporarily as transition entry points, but package module commands are the canonical form.
+Package module commands are the supported CLI entry points; root-level script wrappers are not shipped.
 
 ## Package And Offline Bundle
 

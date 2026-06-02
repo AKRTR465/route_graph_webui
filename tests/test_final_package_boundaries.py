@@ -38,6 +38,12 @@ FORBIDDEN_ROOT_FILES = {
     "mission_repair.py",
     "takeoff_landing_repair.py",
     "registered_env_ids.json",
+    "graph_record.py",
+    "graph_editor.py",
+    "route_planner.py",
+    "mission_export.py",
+    "graph_gui.py",
+    "visualize_graph.py",
 }
 
 FORBIDDEN_ROOT_DIRS = {
@@ -46,15 +52,6 @@ FORBIDDEN_ROOT_DIRS = {
     "tools",
     "webui_backend",
     "__pycache__",
-}
-
-ROOT_WRAPPERS = {
-    "graph_record.py": "route_graph_webui.cli.graph_record",
-    "graph_editor.py": "route_graph_webui.cli.graph_editor",
-    "route_planner.py": "route_graph_webui.cli.route_planner",
-    "mission_export.py": "route_graph_webui.cli.mission_export",
-    "graph_gui.py": "route_graph_webui.cli.graph_gui",
-    "visualize_graph.py": "route_graph_webui.cli.visualize_graph",
 }
 
 LEGACY_IMPORT_RE = re.compile(
@@ -102,19 +99,6 @@ def test_forbidden_root_modules_and_legacy_directories_are_absent() -> None:
 
     assert remaining_files == []
     assert remaining_dirs == []
-
-
-def test_root_cli_wrappers_are_thin_entry_points() -> None:
-    for filename, module_name in ROOT_WRAPPERS.items():
-        source = (PROJECT_ROOT / filename).read_text(encoding="utf-8")
-        lines = [line.strip() for line in source.splitlines() if line.strip()]
-
-        assert lines == [
-            "from __future__ import annotations",
-            f"from {module_name} import main",
-            'if __name__ == "__main__":',
-            "raise SystemExit(main())",
-        ]
 
 
 def test_runtime_graph_examples_are_no_longer_tracked_in_data_graphs() -> None:

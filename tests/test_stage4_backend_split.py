@@ -33,12 +33,12 @@ def test_mission_export_target_package_owns_export_api_after_t06() -> None:
     assert present_exports == owned_exports
 
 
-def test_root_mission_export_is_thin_cli_wrapper_after_t06() -> None:
-    source = (PROJECT_ROOT / "mission_export.py").read_text(encoding="utf-8")
+def test_mission_export_cli_module_owns_public_entrypoint_after_wrapper_removal() -> None:
+    cli_module = importlib.import_module("route_graph_webui.cli.mission_export")
 
-    assert "from route_graph_webui.cli.mission_export import main" in source
-    assert "from route_graph_webui.mission_export import" not in source
-    assert "def build_mission_from_plan" not in source
+    assert callable(cli_module.main)
+    assert callable(cli_module.build_parser)
+    assert not (PROJECT_ROOT / "mission_export.py").exists()
 
 
 def test_backend_routers_own_endpoint_registration_and_delegate_to_service() -> None:
