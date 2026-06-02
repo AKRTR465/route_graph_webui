@@ -1,0 +1,2201 @@
+{
+  "components": {
+    "schemas": {
+      "AddEdgeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "bidirectional": {
+            "default": true,
+            "title": "Bidirectional",
+            "type": "boolean"
+          },
+          "edge_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge Kind"
+          },
+          "from_node": {
+            "title": "From Node",
+            "type": "string"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          },
+          "group_color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Color"
+          },
+          "to_node": {
+            "title": "To Node",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from_node",
+          "to_node"
+        ],
+        "title": "AddEdgeRequest",
+        "type": "object"
+      },
+      "DataDirHealth": {
+        "properties": {
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "writable": {
+            "title": "Writable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "path",
+          "writable"
+        ],
+        "title": "DataDirHealth",
+        "type": "object"
+      },
+      "ExportMissionsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "altitude_mode": {
+            "default": "fixed",
+            "title": "Altitude Mode",
+            "type": "string"
+          },
+          "altitude_offset": {
+            "default": 0.0,
+            "title": "Altitude Offset",
+            "type": "number"
+          },
+          "candidate_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Id"
+          },
+          "candidate_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Candidate Ids",
+            "type": "array"
+          },
+          "candidate_set": {
+            "additionalProperties": true,
+            "title": "Candidate Set",
+            "type": "object"
+          },
+          "corner_max_yaw_step_deg": {
+            "default": 2.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Corner Max Yaw Step Deg",
+            "type": "number"
+          },
+          "corner_min_angle_deg": {
+            "default": 20.0,
+            "exclusiveMaximum": 180.0,
+            "minimum": 0.0,
+            "title": "Corner Min Angle Deg",
+            "type": "number"
+          },
+          "corner_radius": {
+            "default": 900.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Corner Radius",
+            "type": "number"
+          },
+          "fixed_z": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixed Z"
+          },
+          "fps": {
+            "default": 4.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Fps",
+            "type": "number"
+          },
+          "node_sample_radius": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "Node Sample Radius",
+            "type": "number"
+          },
+          "output_dir": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Dir"
+          },
+          "random_seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Random Seed"
+          },
+          "small_turn_yaw_blend_threshold_deg": {
+            "default": 15.0,
+            "minimum": 0.0,
+            "title": "Small Turn Yaw Blend Threshold Deg",
+            "type": "number"
+          },
+          "step_distance": {
+            "default": 60.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Step Distance",
+            "type": "number"
+          },
+          "takeoff_landing_relative_z": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Takeoff Landing Relative Z"
+          },
+          "takeoff_landing_step_distance": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Takeoff Landing Step Distance"
+          },
+          "turn_smoothing_enabled": {
+            "default": true,
+            "title": "Turn Smoothing Enabled",
+            "type": "boolean"
+          },
+          "u_turn_pivot_yaw_step_deg": {
+            "default": 2.5,
+            "exclusiveMinimum": 0.0,
+            "title": "U Turn Pivot Yaw Step Deg",
+            "type": "number"
+          },
+          "u_turn_threshold_deg": {
+            "default": 150.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 180.0,
+            "title": "U Turn Threshold Deg",
+            "type": "number"
+          },
+          "u_turn_transition_distance": {
+            "default": 240.0,
+            "exclusiveMinimum": 0.0,
+            "title": "U Turn Transition Distance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "candidate_set"
+        ],
+        "title": "ExportMissionsRequest",
+        "type": "object"
+      },
+      "FrontendDistHealth": {
+        "properties": {
+          "exists": {
+            "title": "Exists",
+            "type": "boolean"
+          },
+          "index_exists": {
+            "title": "Index Exists",
+            "type": "boolean"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "exists",
+          "index_exists"
+        ],
+        "title": "FrontendDistHealth",
+        "type": "object"
+      },
+      "GenerateAutoPlanRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "allow_reverse_direction_counterparts": {
+            "default": true,
+            "title": "Allow Reverse Direction Counterparts",
+            "type": "boolean"
+          },
+          "allowed_route_group_colors": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed Route Group Colors",
+            "type": "array"
+          },
+          "anchor_weight": {
+            "default": 0.35,
+            "minimum": 0.0,
+            "title": "Anchor Weight",
+            "type": "number"
+          },
+          "coverage_weight": {
+            "default": 1.0,
+            "minimum": 0.0,
+            "title": "Coverage Weight",
+            "type": "number"
+          },
+          "distance_per_frame": {
+            "default": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Distance Per Frame",
+            "type": "number"
+          },
+          "diversity_weight": {
+            "default": 0.45,
+            "minimum": 0.0,
+            "title": "Diversity Weight",
+            "type": "number"
+          },
+          "endpoint_reuse_weight": {
+            "default": 0.2,
+            "minimum": 0.0,
+            "title": "Endpoint Reuse Weight",
+            "type": "number"
+          },
+          "excluded_endpoint_group_colors": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Excluded Endpoint Group Colors",
+            "type": "array"
+          },
+          "export_config": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Export Config"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          },
+          "max_anchor_pairs_to_evaluate": {
+            "default": 100,
+            "minimum": 1.0,
+            "title": "Max Anchor Pairs To Evaluate",
+            "type": "integer"
+          },
+          "max_edge_pass_factor": {
+            "default": 2.5,
+            "minimum": 1.0,
+            "title": "Max Edge Pass Factor",
+            "type": "number"
+          },
+          "max_frame_count": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Frame Count"
+          },
+          "max_output_routes": {
+            "default": 20,
+            "minimum": 1.0,
+            "title": "Max Output Routes",
+            "type": "integer"
+          },
+          "max_routes_per_pair": {
+            "default": 3,
+            "minimum": 1.0,
+            "title": "Max Routes Per Pair",
+            "type": "integer"
+          },
+          "max_search_states": {
+            "default": 50000,
+            "minimum": 1.0,
+            "title": "Max Search States",
+            "type": "integer"
+          },
+          "max_total_length": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Total Length"
+          },
+          "min_endpoint_distance": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "Min Endpoint Distance",
+            "type": "number"
+          },
+          "min_frame_count": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Frame Count"
+          },
+          "min_total_length": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Total Length"
+          },
+          "node_coverage_weight": {
+            "default": 0.2,
+            "minimum": 0.0,
+            "title": "Node Coverage Weight",
+            "type": "number"
+          },
+          "prefer_connected_anchors": {
+            "default": true,
+            "title": "Prefer Connected Anchors",
+            "type": "boolean"
+          },
+          "prefer_route_diversity": {
+            "default": true,
+            "title": "Prefer Route Diversity",
+            "type": "boolean"
+          },
+          "reverse_penalty_weight": {
+            "default": 0.2,
+            "minimum": 0.0,
+            "title": "Reverse Penalty Weight",
+            "type": "number"
+          }
+        },
+        "title": "GenerateAutoPlanRequest",
+        "type": "object"
+      },
+      "GeneratePlanRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "end_node": {
+            "title": "End Node",
+            "type": "string"
+          },
+          "export_config": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Export Config"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          },
+          "max_edge_pass_factor": {
+            "default": 2.5,
+            "minimum": 1.0,
+            "title": "Max Edge Pass Factor",
+            "type": "number"
+          },
+          "max_frame_count": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Frame Count"
+          },
+          "max_routes": {
+            "default": 5,
+            "minimum": 1.0,
+            "title": "Max Routes",
+            "type": "integer"
+          },
+          "max_total_length": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Total Length"
+          },
+          "min_frame_count": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Frame Count"
+          },
+          "min_total_length": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Total Length"
+          },
+          "start_node": {
+            "title": "Start Node",
+            "type": "string"
+          },
+          "via_nodes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Via Nodes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "start_node",
+          "end_node"
+        ],
+        "title": "GeneratePlanRequest",
+        "type": "object"
+      },
+      "GraphStoreHealth": {
+        "properties": {
+          "count": {
+            "minimum": 0.0,
+            "title": "Count",
+            "type": "integer"
+          },
+          "root": {
+            "title": "Root",
+            "type": "string"
+          }
+        },
+        "required": [
+          "root",
+          "count"
+        ],
+        "title": "GraphStoreHealth",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "data_dir": {
+            "$ref": "#/components/schemas/DataDirHealth"
+          },
+          "frontend_dist": {
+            "$ref": "#/components/schemas/FrontendDistHealth"
+          },
+          "graphs": {
+            "$ref": "#/components/schemas/GraphStoreHealth"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "workers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/WorkerServiceHealth"
+            },
+            "title": "Workers",
+            "type": "object"
+          }
+        },
+        "required": [
+          "status",
+          "version",
+          "frontend_dist",
+          "data_dir",
+          "graphs",
+          "workers"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "NodeMoveRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          },
+          "node_id": {
+            "title": "Node Id",
+            "type": "string"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "title": "Y",
+            "type": "number"
+          }
+        },
+        "required": [
+          "node_id",
+          "x",
+          "y"
+        ],
+        "title": "NodeMoveRequest",
+        "type": "object"
+      },
+      "NodeUpdateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "node_id": {
+            "title": "Node Id",
+            "type": "string"
+          },
+          "sample_radius": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Radius"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "yaw_hint": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yaw Hint"
+          }
+        },
+        "required": [
+          "node_id"
+        ],
+        "title": "NodeUpdateRequest",
+        "type": "object"
+      },
+      "PreviewMissionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "altitude_mode": {
+            "default": "fixed",
+            "title": "Altitude Mode",
+            "type": "string"
+          },
+          "altitude_offset": {
+            "default": 0.0,
+            "title": "Altitude Offset",
+            "type": "number"
+          },
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "candidate_set": {
+            "additionalProperties": true,
+            "title": "Candidate Set",
+            "type": "object"
+          },
+          "corner_max_yaw_step_deg": {
+            "default": 2.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Corner Max Yaw Step Deg",
+            "type": "number"
+          },
+          "corner_min_angle_deg": {
+            "default": 20.0,
+            "exclusiveMaximum": 180.0,
+            "minimum": 0.0,
+            "title": "Corner Min Angle Deg",
+            "type": "number"
+          },
+          "corner_radius": {
+            "default": 900.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Corner Radius",
+            "type": "number"
+          },
+          "fixed_z": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixed Z"
+          },
+          "fps": {
+            "default": 4.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Fps",
+            "type": "number"
+          },
+          "node_sample_radius": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "Node Sample Radius",
+            "type": "number"
+          },
+          "random_seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Random Seed"
+          },
+          "small_turn_yaw_blend_threshold_deg": {
+            "default": 15.0,
+            "minimum": 0.0,
+            "title": "Small Turn Yaw Blend Threshold Deg",
+            "type": "number"
+          },
+          "step_distance": {
+            "default": 60.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Step Distance",
+            "type": "number"
+          },
+          "takeoff_landing_relative_z": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Takeoff Landing Relative Z"
+          },
+          "takeoff_landing_step_distance": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Takeoff Landing Step Distance"
+          },
+          "turn_smoothing_enabled": {
+            "default": true,
+            "title": "Turn Smoothing Enabled",
+            "type": "boolean"
+          },
+          "u_turn_pivot_yaw_step_deg": {
+            "default": 2.5,
+            "exclusiveMinimum": 0.0,
+            "title": "U Turn Pivot Yaw Step Deg",
+            "type": "number"
+          },
+          "u_turn_threshold_deg": {
+            "default": 150.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 180.0,
+            "title": "U Turn Threshold Deg",
+            "type": "number"
+          },
+          "u_turn_transition_distance": {
+            "default": 240.0,
+            "exclusiveMinimum": 0.0,
+            "title": "U Turn Transition Distance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "candidate_set",
+          "candidate_id"
+        ],
+        "title": "PreviewMissionRequest",
+        "type": "object"
+      },
+      "RemoveEdgeBetweenRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "from_node": {
+            "title": "From Node",
+            "type": "string"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          },
+          "to_node": {
+            "title": "To Node",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from_node",
+          "to_node"
+        ],
+        "title": "RemoveEdgeBetweenRequest",
+        "type": "object"
+      },
+      "RemoveEdgeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "edge_id": {
+            "title": "Edge Id",
+            "type": "string"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          }
+        },
+        "required": [
+          "edge_id"
+        ],
+        "title": "RemoveEdgeRequest",
+        "type": "object"
+      },
+      "SaveCandidateSetRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_set": {
+            "additionalProperties": true,
+            "title": "Candidate Set",
+            "type": "object"
+          },
+          "file_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Name"
+          }
+        },
+        "required": [
+          "candidate_set"
+        ],
+        "title": "SaveCandidateSetRequest",
+        "type": "object"
+      },
+      "ScopedGraphRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          }
+        },
+        "title": "ScopedGraphRequest",
+        "type": "object"
+      },
+      "UpdateCanvasViewRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "flip_horizontal": {
+            "default": false,
+            "title": "Flip Horizontal",
+            "type": "boolean"
+          },
+          "flip_vertical": {
+            "default": false,
+            "title": "Flip Vertical",
+            "type": "boolean"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          },
+          "rotation_quadrants": {
+            "default": 0,
+            "maximum": 3.0,
+            "minimum": 0.0,
+            "title": "Rotation Quadrants",
+            "type": "integer"
+          }
+        },
+        "title": "UpdateCanvasViewRequest",
+        "type": "object"
+      },
+      "UpdateEdgeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "bidirectional": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bidirectional"
+          },
+          "edge_id": {
+            "title": "Edge Id",
+            "type": "string"
+          },
+          "edge_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge Kind"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          },
+          "group_color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Color"
+          }
+        },
+        "required": [
+          "edge_id"
+        ],
+        "title": "UpdateEdgeRequest",
+        "type": "object"
+      },
+      "UpdateGraphGroupConfigRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "bridge_color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bridge Color"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          },
+          "group_color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Color"
+          },
+          "group_config": {
+            "additionalProperties": true,
+            "title": "Group Config",
+            "type": "object"
+          }
+        },
+        "title": "UpdateGraphGroupConfigRequest",
+        "type": "object"
+      },
+      "UpdateGraphUiStateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "auto_plan_inputs": {
+            "additionalProperties": true,
+            "title": "Auto Plan Inputs",
+            "type": "object"
+          },
+          "export_inputs": {
+            "additionalProperties": true,
+            "title": "Export Inputs",
+            "type": "object"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph"
+          },
+          "group_inputs": {
+            "additionalProperties": true,
+            "title": "Group Inputs",
+            "type": "object"
+          },
+          "planner_inputs": {
+            "additionalProperties": true,
+            "title": "Planner Inputs",
+            "type": "object"
+          }
+        },
+        "title": "UpdateGraphUiStateRequest",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WorkerServiceHealth": {
+        "properties": {
+          "active_jobs": {
+            "minimum": 0.0,
+            "title": "Active Jobs",
+            "type": "integer"
+          },
+          "jobs_by_state": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Jobs By State",
+            "type": "object"
+          },
+          "runtime_root": {
+            "title": "Runtime Root",
+            "type": "string"
+          },
+          "worker_exists": {
+            "title": "Worker Exists",
+            "type": "boolean"
+          },
+          "worker_path": {
+            "title": "Worker Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "worker_path",
+          "worker_exists",
+          "runtime_root",
+          "active_jobs"
+        ],
+        "title": "WorkerServiceHealth",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Route Graph WebUI API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/app/last-graph": {
+      "post": {
+        "operationId": "update_last_graph_api_app_last_graph_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScopedGraphRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Update Last Graph Api App Last Graph Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Last Graph",
+        "tags": [
+          "ui-state"
+        ]
+      }
+    },
+    "/api/candidate-set/save": {
+      "post": {
+        "operationId": "save_candidate_routes_api_candidate_set_save_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCandidateSetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Save Candidate Routes Api Candidate Set Save Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Candidate Routes",
+        "tags": [
+          "plans"
+        ]
+      }
+    },
+    "/api/edge/add": {
+      "post": {
+        "operationId": "add_edge_api_edge_add_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddEdgeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Add Edge Api Edge Add Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Edge",
+        "tags": [
+          "graphs"
+        ]
+      }
+    },
+    "/api/edge/remove": {
+      "post": {
+        "operationId": "remove_edge_api_edge_remove_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveEdgeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Remove Edge Api Edge Remove Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Edge",
+        "tags": [
+          "graphs"
+        ]
+      }
+    },
+    "/api/edge/remove-between": {
+      "post": {
+        "operationId": "remove_edge_between_api_edge_remove_between_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveEdgeBetweenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Remove Edge Between Api Edge Remove Between Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Edge Between",
+        "tags": [
+          "graphs"
+        ]
+      }
+    },
+    "/api/edge/update": {
+      "post": {
+        "operationId": "update_edge_api_edge_update_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEdgeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Update Edge Api Edge Update Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Edge",
+        "tags": [
+          "graphs"
+        ]
+      }
+    },
+    "/api/graph": {
+      "get": {
+        "operationId": "get_graph_api_graph_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "graph",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Graph"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Graph Api Graph Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Graph",
+        "tags": [
+          "graphs"
+        ]
+      }
+    },
+    "/api/graph/canvas-view": {
+      "post": {
+        "operationId": "update_canvas_view_api_graph_canvas_view_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCanvasViewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Update Canvas View Api Graph Canvas View Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Canvas View",
+        "tags": [
+          "ui-state"
+        ]
+      }
+    },
+    "/api/graph/group-config": {
+      "post": {
+        "operationId": "update_graph_group_config_api_graph_group_config_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGraphGroupConfigRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Update Graph Group Config Api Graph Group Config Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Graph Group Config",
+        "tags": [
+          "graphs"
+        ]
+      }
+    },
+    "/api/graph/ui-state": {
+      "post": {
+        "operationId": "update_graph_ui_state_api_graph_ui_state_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGraphUiStateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Update Graph Ui State Api Graph Ui State Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Graph Ui State",
+        "tags": [
+          "ui-state"
+        ]
+      }
+    },
+    "/api/graph/validate": {
+      "get": {
+        "operationId": "validate_current_graph_api_graph_validate_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "graph",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Graph"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Validate Current Graph Api Graph Validate Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Validate Current Graph",
+        "tags": [
+          "graphs"
+        ]
+      }
+    },
+    "/api/graphs": {
+      "get": {
+        "operationId": "list_graphs_api_graphs_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Graphs Api Graphs Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Graphs",
+        "tags": [
+          "graphs"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/missions/export": {
+      "post": {
+        "operationId": "export_missions_api_missions_export_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportMissionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Export Missions Api Missions Export Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Missions",
+        "tags": [
+          "missions"
+        ]
+      }
+    },
+    "/api/missions/preview": {
+      "post": {
+        "operationId": "preview_mission_api_missions_preview_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewMissionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Preview Mission Api Missions Preview Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Preview Mission",
+        "tags": [
+          "missions"
+        ]
+      }
+    },
+    "/api/node/move": {
+      "post": {
+        "operationId": "move_node_api_node_move_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NodeMoveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Move Node Api Node Move Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Move Node",
+        "tags": [
+          "graphs"
+        ]
+      }
+    },
+    "/api/node/update": {
+      "post": {
+        "operationId": "update_node_api_node_update_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NodeUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Update Node Api Node Update Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Node",
+        "tags": [
+          "graphs"
+        ]
+      }
+    },
+    "/api/ping": {
+      "get": {
+        "operationId": "ping_api_ping_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Ping Api Ping Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ping",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/plan": {
+      "post": {
+        "operationId": "plan_routes_api_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneratePlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Plan Routes Api Plan Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Plan Routes",
+        "tags": [
+          "plans"
+        ]
+      }
+    },
+    "/api/plan/auto": {
+      "post": {
+        "operationId": "auto_plan_api_plan_auto_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateAutoPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Auto Plan Api Plan Auto Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Auto Plan",
+        "tags": [
+          "plans"
+        ]
+      }
+    },
+    "/api/plan/auto/jobs": {
+      "post": {
+        "operationId": "create_auto_plan_job_api_plan_auto_jobs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateAutoPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Create Auto Plan Job Api Plan Auto Jobs Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Auto Plan Job",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/plan/auto/jobs/{job_id}": {
+      "get": {
+        "operationId": "get_auto_plan_job_api_plan_auto_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Auto Plan Job Api Plan Auto Jobs  Job Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Auto Plan Job",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/plan/auto/jobs/{job_id}/cancel": {
+      "post": {
+        "operationId": "cancel_auto_plan_job_api_plan_auto_jobs__job_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Cancel Auto Plan Job Api Plan Auto Jobs  Job Id  Cancel Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Auto Plan Job",
+        "tags": [
+          "jobs"
+        ]
+      }
+    }
+  }
+}

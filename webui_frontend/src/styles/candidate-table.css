@@ -1,0 +1,188 @@
+/* Candidate table, candidate detail, and mission preview status styles. */
+
+.candidate-summary {
+  flex-wrap:wrap;
+  gap:.55rem;
+  display:flex;
+}
+
+.candidate-toolbar,.keep-toggle,.toggle-row,.candidate-detail__head {
+  justify-content:space-between;
+  align-items:center;
+  gap:.8rem;
+  display:flex;
+}
+
+.panel-card--candidate-panel {
+  flex-direction:column;
+  gap:.9rem;
+  display:flex;
+}
+
+.candidate-toolbar {
+  flex-wrap:wrap;
+}
+
+.candidate-table-wrap {
+  border-radius:var(--radius-sm);
+  scrollbar-gutter:stable both-edges;
+  background:#ffffffbd;
+  border:1px solid #102a4314;
+  outline:none;
+  max-height:clamp(22rem,40vh,32rem);
+  overflow:auto;
+}
+
+.candidate-table-wrap--focused {
+  border-color:#0e749052;
+  box-shadow:0 0 0 4px #7dd3fc29;
+}
+
+.candidate-table {
+  border-collapse:separate;
+  border-spacing:0;
+  width:max-content;
+  min-width:100%;
+  font-size:.82rem;
+}
+
+.candidate-table th,.candidate-table td {
+  white-space:nowrap;
+  border-bottom:1px solid #102a430f;
+  padding:.58rem .72rem;
+}
+
+.candidate-table th {
+  z-index:1;
+  text-align:left;
+  letter-spacing:.04em;
+  color:var(--ink-soft);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  background:#f7f0e3f5;
+  font-size:.74rem;
+  position:sticky;
+  top:0;
+}
+
+.candidate-table th:first-child,.candidate-table td:first-child {
+  width:3.5rem;
+}
+
+.candidate-table th:nth-child(2),.candidate-table td:nth-child(2) {
+  text-align:center;
+  width:4rem;
+}
+
+.candidate-table th:nth-child(3),.candidate-table td:nth-child(3) {
+  width:7rem;
+}
+
+.candidate-table th:nth-child(4),.candidate-table td:nth-child(4),.candidate-table th:nth-child(5),.candidate-table td:nth-child(5) {
+  width:5.25rem;
+}
+
+.candidate-table th:nth-child(6),.candidate-table td:nth-child(6) {
+  text-align:right;
+  width:6rem;
+}
+
+.candidate-table th:nth-child(7),.candidate-table td:nth-child(7),.candidate-table th:nth-child(8),.candidate-table td:nth-child(8),.candidate-table th:nth-child(9),.candidate-table td:nth-child(9) {
+  text-align:center;
+  width:5.5rem;
+}
+
+.candidate-table tbody tr {
+  cursor:pointer;
+  transition:background-color .16s;
+}
+
+.candidate-table tbody tr:hover {
+  background:#0e74900f;
+}
+
+.candidate-table__row--selected {
+  background:#0e74901a;
+}
+
+.candidate-table__row--current {
+  background:#f973161f;
+}
+
+.candidate-table__keep {
+  text-align:center;
+  color:#9a3412;
+  font-weight:700;
+}
+
+.candidate-detail {
+  flex-direction:column;
+  gap:.75rem;
+  display:flex;
+}
+
+.candidate-meta--preview span {
+  color:#1d4ed8;
+  background:#2563eb14;
+}
+
+.candidate-detail h3 {
+  margin:.2rem 0 0;
+}
+
+.candidate-path,.candidate-path--detail {
+  color:var(--ink-strong);
+  word-break:break-word;
+  margin:0;
+  font-weight:500;
+}
+
+.candidate-path--detail {
+  line-height:1.55;
+}
+
+.candidate-meta {
+  flex-wrap:wrap;
+  gap:.5rem;
+  display:flex;
+}
+
+.candidate-meta span {
+  color:var(--ink-soft);
+  background:#102a430f;
+  border-radius:999px;
+  padding:.35rem .7rem;
+  font-size:.8rem;
+}
+
+.preview-status-card {
+  flex-direction:column;
+  gap:.7rem;
+  display:flex;
+}
+
+.preview-status-card--info {
+  background:#eff6ffd9;
+  border-color:#3b82f62e;
+}
+
+.preview-status-card--success {
+  background:#eff6ffeb;
+  border-color:#2563eb33;
+}
+
+.preview-status-card--error {
+  background:#fef2f2eb;
+  border-color:#ef444433;
+}
+
+.preview-status-card__text {
+  color:var(--ink-strong);
+  margin:0;
+  font-size:.84rem;
+  line-height:1.45;
+}
+
+.toggle-row input,.keep-toggle input {
+  width:auto;
+}

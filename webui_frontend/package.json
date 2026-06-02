@@ -1,0 +1,34 @@
+{
+  "name": "webui_frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "test": "node --test --experimental-strip-types tests/test_webui_palette_selection.ts tests/test_webui_depth_card.ts tests/test_webui_node_pulse.ts tests/test_webui_edge_intent.ts tests/test_webui_pure_logic.ts tests/test_app_contracts.ts",
+    "test:collect": "node --test --experimental-strip-types --test-name-pattern \"__collect_only__\" tests/test_webui_palette_selection.ts tests/test_webui_depth_card.ts tests/test_webui_node_pulse.ts tests/test_webui_edge_intent.ts tests/test_webui_pure_logic.ts tests/test_app_contracts.ts",
+    "typecheck": "vue-tsc -b",
+    "lint": "node scripts/check-lint.mjs && npm run typecheck",
+    "format": "node scripts/check-format.mjs",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "@vue-flow/background": "^1.3.2",
+    "@vue-flow/controls": "^1.1.3",
+    "@vue-flow/core": "^1.48.2",
+    "@vue-flow/minimap": "^1.5.4",
+    "axios": "^1.16.1",
+    "tailwindcss": "^4.2.2",
+    "vue": "^3.5.32"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@vue/tsconfig": "^0.9.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4",
+    "vue-tsc": "^3.2.6"
+  }
+}

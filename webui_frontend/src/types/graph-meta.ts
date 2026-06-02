@@ -1,0 +1,13 @@
+export const NODE_SAMPLE_RADIUS_META_KEY = 'node_sample_radius' as const
+export const EDGE_KIND_META_KEY = 'edge_kind' as const
+export const EDGE_KIND_GROUP = 'group' as const
+export const EDGE_KIND_BRIDGE = 'bridge' as const
+export const EDGE_GROUP_COLOR_META_KEY = 'group_color' as const
+export const GRAPH_GROUP_CONFIGS_META_KEY = 'group_configs_v1' as const
+export const GRAPH_BRIDGE_STYLE_META_KEY = 'bridge_style_v1' as const
+export const GRAPH_GUI_EXPORT_INPUTS_META_KEY = 'graph_gui_export_inputs_v1' as const
+export const GRAPH_GUI_AUTO_PLAN_INPUTS_META_KEY = 'graph_gui_auto_plan_inputs_v1' as const
+export const GRAPH_GUI_WEBUI_INPUTS_META_KEY = 'graph_gui_webui_inputs_v1' as const
+export const GRAPH_GUI_CANVAS_VIEW_META_KEY = 'graph_gui_canvas_view_v1' as const
+export const DEFAULT_GROUP_COLOR = '#334155' as const
+export const DEFAULT_BRIDGE_COLOR = '#F97316' as const

@@ -1,0 +1,175 @@
+/* Canvas, Vue Flow overrides, graph legend, and mission preview overlay styles. */
+
+.legend-row {
+  flex-wrap:wrap;
+  gap:.55rem;
+  display:flex;
+}
+
+.legend-item {
+  border-radius:999px;
+  align-items:center;
+  gap:.45rem;
+  padding:.45rem .8rem;
+  font-size:.82rem;
+  font-weight:700;
+  display:inline-flex;
+}
+
+.canvas-atmosphere {
+  z-index:0;
+  pointer-events:none;
+  position:absolute;
+  inset:0;
+  overflow:visible;
+}
+
+.canvas-atmosphere__grid,.canvas-atmosphere__wave-canvas,.canvas-atmosphere__glow,.canvas-atmosphere__scanline {
+  pointer-events:none;
+  position:absolute;
+}
+
+.canvas-atmosphere__grid {
+  z-index:0;
+  display:none;
+  inset:0;
+}
+
+.canvas-atmosphere__wave-canvas {
+  z-index:1;
+  opacity:.98;
+  width:100%;
+  height:100%;
+  inset:0;
+}
+
+.canvas-atmosphere__glow {
+  z-index:2;
+  opacity:.32;
+  background:radial-gradient(circle at 20% 18%,#e0c9ad1f,#0000 34%),radial-gradient(circle at 82% 78%,#ece0cd1a,#0000 30%),radial-gradient(circle at 55% 100%,#baa48a0f,#0000 40%);
+  inset:-12%;
+}
+
+.canvas-atmosphere__scanline {
+  display:none;
+  inset:-12%;
+}
+
+.graph-flow {
+  z-index:1;
+  background:0 0;
+  width:100%;
+  height:100%;
+  position:relative;
+}
+
+.mission-preview-overlay {
+  pointer-events:none;
+  z-index:2;
+  width:100%;
+  height:100%;
+  position:absolute;
+  inset:0;
+  overflow:visible;
+}
+
+.mission-preview-overlay__guide {
+  fill:none;
+  stroke:#0f172a47;
+  stroke-width:1.2px;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  opacity:.58;
+}
+
+.mission-preview-overlay__chevron {
+  stroke:#05080f;
+  stroke-width:1.15px;
+  stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 1px 3px #0f172a3d);
+  opacity:.96;
+}
+
+.mission-preview-overlay__chevron--yellow,.mission-preview-overlay__chevron--black {
+  fill:#111827;
+}
+
+.graph-flow .vue-flow__node {
+  box-shadow:none;
+  background:0 0;
+  border-radius:999px;
+}
+
+.graph-flow .vue-flow__edge-path,.graph-flow .vue-flow__connection-path {
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.graph-flow .vue-flow__minimap {
+  background:#ffffffeb;
+  border:1px solid #102a4314;
+  border-radius:16px;
+  box-shadow:0 10px 24px #0f172a14;
+}
+
+.graph-flow .vue-flow__controls {
+  border:1px solid #102a4314;
+  border-radius:18px;
+  overflow:visible;
+  box-shadow:0 10px 24px #0f172a14;
+}
+
+.graph-flow .vue-flow__controls-button {
+  background:#ffffffe6;
+  width:2.4rem;
+  height:2.4rem;
+}
+
+.viewport-control-icon {
+  width:1rem;
+  height:1rem;
+  display:block;
+}
+
+.viewport-control-icon--stroke {
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8px;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.legend-item {
+  color:var(--ink-soft);
+  background:#102a430f;
+}
+
+.legend-line {
+  border-radius:999px;
+  width:2rem;
+  height:.3rem;
+}
+
+.legend-line--route {
+  background:#f97316;
+}
+
+.legend-line--preview {
+  background:repeating-linear-gradient(90deg,#0f172a 0 6px,#f59e0b 6px 13px,#fff 13px 20px);
+  border:1px solid #0f172a59;
+}
+
+.legend-line--group {
+  background:#0f766e;
+}
+
+.legend-line--disabled {
+  background:repeating-linear-gradient(90deg,#94a3b8 0 8px,#0000 8px 12px);
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .canvas-atmosphere__wave-canvas {
+    display:none;
+  }
+}

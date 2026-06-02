@@ -1,0 +1,43 @@
+:root {
+  color-scheme: light;
+  font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  background:
+    radial-gradient(circle at top left, rgba(14, 116, 144, 0.18), transparent 32%),
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 28%),
+    linear-gradient(180deg, #f7f0e3 0%, #edf5f4 100%);
+  color: #102a43;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --ink-strong: #102a43;
+  --ink-soft: #486581;
+  --surface: rgba(255, 250, 240, 0.82);
+  --surface-strong: rgba(255, 255, 255, 0.9);
+  --surface-dark: #102a43;
+  --line: rgba(16, 42, 67, 0.12);
+  --accent: #f97316;
+  --accent-soft: #ffe7c2;
+  --teal: #0f766e;
+  --danger: #dc2626;
+  --shadow-lg: 0 28px 60px rgba(15, 23, 42, 0.14);
+  --shadow-md: 0 16px 36px rgba(15, 23, 42, 0.12);
+  --radius-lg: 28px;
+  --radius-md: 20px;
+  --radius-sm: 14px;
+  --header-control-height: 3.15rem;
+  --header-control-radius: 18px;
+  --header-control-gap: 0.8rem;
+  --depth-perspective: 1200px;
+  --depth-max-tilt: 3.5deg;
+  --depth-hover-lift: 4px;
+  --depth-shadow-only-lift: 2px;
+  --depth-settle-duration: 220ms;
+  --depth-settle-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --page-contours-major-svg: url("../assets/page-contours-major.svg");
+  --page-contours-minor-svg: none;
+  --page-contours-major-svg-mobile: url("../assets/page-contours-major-mobile.svg");
+  --page-contours-minor-svg-mobile: none;
+}

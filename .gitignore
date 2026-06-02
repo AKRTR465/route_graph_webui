@@ -1,0 +1,13 @@
+# Source package excludes generated/runtime files.
+webui_frontend/node_modules/
+webui_frontend/dist/
+data/logs/
+data/webui_state.json
+data/plans/
+data/missions/
+data/previews/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.claude/settings.local.json
+tools/archive/
