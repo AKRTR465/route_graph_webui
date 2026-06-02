@@ -2,7 +2,7 @@
 setlocal
 
 set "ROOT=%~dp0"
-set "BACKEND_DIR=%ROOT%webui_backend"
+set "SRC_DIR=%ROOT%src"
 set "FRONTEND_INDEX=%ROOT%webui_frontend\dist\index.html"
 
 if not defined ROUTE_GRAPH_WEBUI_HOST set "ROUTE_GRAPH_WEBUI_HOST=127.0.0.1"
@@ -22,6 +22,12 @@ if defined ROUTE_GRAPH_WEBUI_PYTHON (
 if errorlevel 1 (
   echo Python was not found. Set ROUTE_GRAPH_WEBUI_PYTHON or add python to PATH.
   exit /b 1
+)
+
+if defined PYTHONPATH (
+  set "PYTHONPATH=%SRC_DIR%;%PYTHONPATH%"
+) else (
+  set "PYTHONPATH=%SRC_DIR%"
 )
 
 if not defined ROUTE_GRAPH_WEBUI_DATA_DIR (
@@ -50,7 +56,7 @@ if errorlevel 1 exit /b 1
 
 echo Backend bind: %ROUTE_GRAPH_WEBUI_HOST%:%ROUTE_GRAPH_WEBUI_PORT%
 echo Data directory: "%ROUTE_GRAPH_WEBUI_DATA_DIR%"
-start "route_graph_webui_backend" cmd /k "cd /d ""%BACKEND_DIR%"" && ""%PYTHON_EXE%"" -m uvicorn server:app --host %ROUTE_GRAPH_WEBUI_HOST% --port %ROUTE_GRAPH_WEBUI_PORT%"
+start "route_graph_api" cmd /k "cd /d ""%ROOT%"" && ""%PYTHON_EXE%"" -m uvicorn route_graph_webui.backend.server:app --host %ROUTE_GRAPH_WEBUI_HOST% --port %ROUTE_GRAPH_WEBUI_PORT%"
 
 echo Waiting for backend readiness: %BACKEND_HEALTH_URL%
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^

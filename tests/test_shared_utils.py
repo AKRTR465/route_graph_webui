@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from geometry import (
+from route_graph_webui.shared.geometry import (
     distance_3d,
     distance_point_to_segment_2d,
     interpolate_segment_3d,
@@ -12,7 +12,7 @@ from geometry import (
     project_point_to_segment_2d,
     segments_intersect_2d,
 )
-from image_sequence_utils import collect_image_files, find_image_directories
+from route_graph_webui.shared.image_sequence import collect_image_files, find_image_directories
 
 
 class GeometryUtilsTests(unittest.TestCase):

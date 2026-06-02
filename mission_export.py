@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from mission_export import *  # re-exported for direct execution compatibility
-from mission_export import main as _main
+from route_graph_webui.cli.mission_export import main
 
 
 if __name__ == "__main__":
-    raise SystemExit(_main())
+    raise SystemExit(main())

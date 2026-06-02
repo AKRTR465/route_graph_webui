@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from edge_intent_service import resolve_edge_creation_meta
-from graph_gui import resolve_graph_gui_edge_creation_meta
 from tests.route_graph_test_helpers import *
+from route_graph_webui.graph.edge_intent import resolve_edge_creation_meta
+
+
+resolve_graph_gui_edge_creation_meta = graph_gui_module.resolve_graph_gui_edge_creation_meta
 
 class WebUiServerFrontendStaticTests(unittest.TestCase):
     def test_default_cors_is_local_only_unless_explicitly_opened(self) -> None:

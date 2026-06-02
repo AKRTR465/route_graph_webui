@@ -4,8 +4,9 @@ import unittest
 
 from fastapi.testclient import TestClient
 
-from auto_route_planner import AutoPlanningConfig
-from webui_backend import server as server_module
+from route_graph_webui.backend import server as server_module
+from route_graph_webui.planning.auto_route_planner import AutoPlanningConfig
+
 
 
 class ApiContractTests(unittest.TestCase):
@@ -47,4 +48,3 @@ class ApiContractTests(unittest.TestCase):
         self.assertFalse(config.prefer_connected_anchors)
         self.assertFalse(config.prefer_route_diversity)
         self.assertFalse(config.allow_reverse_direction_counterparts)
-

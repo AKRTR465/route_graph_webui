@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import auto_route_planner as auto_route_planner_module
-
 from tests.route_graph_test_helpers import *
 
 class AutoRoutePlannerTests(unittest.TestCase):
@@ -728,7 +726,8 @@ class RouteGenerationWorkerTests(unittest.TestCase):
             result = subprocess.run(
                 [
                     sys.executable,
-                    str(PROJECT_ROOT / "route_generation_worker.py"),
+                    "-m",
+                    "route_graph_webui.apps.workers.route_generation",
                     "--payload",
                     str(payload_path),
                 ],

@@ -8,7 +8,7 @@ Stage 5C closed the low-risk utility/performance pass and final release validati
 - `route_planner` parent pointer traceback optimization is not implemented yet. The current path expansion keeps existing candidate ordering and filtering semantics; a parent pointer rewrite needs focused equivalence tests.
 - `auto_route_planner` Dijkstra/endpoint-distance caching is not implemented yet. Endpoint distance now reuses shared geometry helpers, but Dijkstra reuse should be handled as a separate planner performance change.
 - `validate_graph` now buckets edge intersection checks by group color. A spatial index is deferred until a large-graph performance pass needs it and can prove identical validation results.
-- `tools/mission/mission_repair.py` still keeps its local `_interpolate_segment` behavior because it rounds generated repair points and raises repair-specific `GraphSchemaError` messages. A later cleanup can wrap shared `geometry.interpolate_segment_3d` while preserving that rounding/error contract.
+- `route_graph_webui.tools.mission.mission_repair` still keeps its local `_interpolate_segment` behavior because it rounds generated repair points and raises repair-specific `GraphSchemaError` messages. A later cleanup can wrap shared `geometry.interpolate_segment_3d` while preserving that rounding/error contract.
 - `npm outdated` is clean after applying Wanted in-range updates and upgrading the dev-only `@types/node` package to 25.x. This changes TypeScript Node declarations only and does not change the runtime Node version.
 
 ## 下一轮优化项

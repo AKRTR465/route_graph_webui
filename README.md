@@ -1,114 +1,102 @@
 # route_graph_webui
 
-本目录是 Route Graph WebUI 的源码包。根 README 只保留启动、开发、离线运行包和常用检查命令；更细的格式和工具说明见 `docs/`。
+Route Graph WebUI is a local WebUI and CLI toolkit for editing route graphs, planning UAV routes, and exporting replay-compatible mission JSON.
 
-## 文档入口
+Run commands from this `route_graph_webui/` directory unless noted otherwise.
 
-- `docs/README.md`：文档索引。
-- `docs/schema/graph-json.md`：graph JSON schema 简要说明。
-- `docs/operations/optional-tools.md`：media / mission 可选工具说明。
-- `webui_frontend/README.md`：前端工程脚本和环境变量。
-- `TODO.md`：执行清单。
+## Documentation
 
-## 目录约定
+- `docs/README.md`: documentation index.
+- `docs/schema/graph-json.md`: graph JSON format.
+- `docs/operations/optional-tools.md`: optional media and mission repair tools.
+- `docs/preview/`: development preview assets for frontend contour backgrounds.
+- `webui_frontend/README.md`: frontend scripts and environment variables.
+- `TODO.md`: staged refactor checklist.
 
-建议在本 README 所在的 `route_graph_webui/` 目录下执行命令。
+## Runtime Data
 
-常用运行态目录：
+Runtime data lives under `ROUTE_GRAPH_WEBUI_DATA_DIR`. In source development, the default is this repository's `data/` directory. In release/offline startup, `start.bat` defaults to a user-writable data directory unless `ROUTE_GRAPH_WEBUI_DATA_DIR` is set.
 
-- `data/graphs`：graph JSON。
-- `data/plans`：候选集和 plan。
-- `data/missions`：导出的 mission。
-- `data/previews`：预览图。
+Runtime subdirectories:
 
-运行态数据目录由 `ROUTE_GRAPH_WEBUI_DATA_DIR` 指定。未指定时，源码开发默认使用本目录下的 `data/`；离线运行包通过 `start.bat` 默认使用用户可写目录，也可提前设置 `ROUTE_GRAPH_WEBUI_DATA_DIR` 覆盖。
+- `graphs`: active graph JSON files.
+- `plans`: candidate sets and plans.
+- `missions`: exported mission JSON files.
+- `previews`: generated preview images.
+- `logs`, `progress`, `state`: runtime diagnostics and WebUI state.
 
-旧拼写兼容集中在 `spelling_compat.py`：`ROUTE_GARPH_DIR`、`route_garph`、`phtots` 只作为只读 fallback 保留到 `2026-12-31`。新写入只使用 `ROUTE_GRAPH_WEBUI_DATA_DIR`、`photos` 和正确拼写的 graph creator。
+Sample graphs are stored as repository examples under `data/examples/graphs/*.json`. On first startup, `ensure_data_directories()` creates the runtime data directories and copies those examples into an empty runtime `graphs` directory.
 
-## 干净机器启动
+## Install
 
-后端运行依赖：
+Runtime dependencies:
 
 ```powershell
-python -m pip install -r requirements-runtime.txt
+python -m pip install -r requirements/runtime.txt
 ```
 
-前端依赖和构建：
+Editable install with development dependencies:
+
+```powershell
+python -m pip install -e ".[dev]"
+```
+
+Optional media dependencies:
+
+```powershell
+python -m pip install -e ".[media]"
+```
+
+The equivalent requirements files are `requirements/dev.txt` and `requirements/media.txt`.
+
+## Start
+
+Build the frontend for offline-style startup:
 
 ```powershell
 npm --prefix webui_frontend ci
 npm --prefix webui_frontend run build
-```
-
-启动离线式 WebUI：
-
-```powershell
 start.bat
 ```
 
-`start.bat` 会检查 Python、端口占用和 `webui_frontend/dist/index.html`，然后启动后端并用 `/api/health` 做 readiness check。
-
-常用环境变量：
-
-- `ROUTE_GRAPH_WEBUI_HOST`：后端监听地址，默认 `127.0.0.1`。
-- `ROUTE_GRAPH_WEBUI_PORT`：后端端口，默认 `8000`。
-- `ROUTE_GRAPH_WEBUI_DATA_DIR`：运行态数据目录。
-- `ROUTE_GRAPH_WEBUI_PYTHON`：指定 Python 可执行文件。
-- `ROUTE_GRAPH_WEBUI_ALLOW_LAN=1`：显式允许局域网调试。
-- `ROUTE_GRAPH_WEBUI_CORS_ORIGINS`：覆盖允许的 CORS origins。
-
-WebUI 是本地写文件工具，不应暴露到公网。
-
-## 源码开发
-
-安装开发依赖：
+`start.bat` checks Python, the backend port, and `webui_frontend/dist/index.html`, then starts:
 
 ```powershell
-python -m pip install -r requirements-dev.txt
-npm --prefix webui_frontend ci
+python -m uvicorn route_graph_webui.backend.server:app --host 127.0.0.1 --port 8000
 ```
 
-启动开发模式：
+Development startup:
 
 ```powershell
+python -m pip install -e ".[dev]"
+npm --prefix webui_frontend ci
 start_dev.bat
 ```
 
-`start_dev.bat` 会检查 Python、Node、npm 和默认端口，启动后端 reload 模式和 Vite dev server。前端请求默认走 Vite `/api` proxy；如果后端 host/port 改了，可设置 `VITE_API_BASE` 或依赖脚本注入的默认值。
+`start_dev.bat` starts the package backend in reload mode and the Vite dev server. Both scripts set `PYTHONPATH=%ROOT%src` so they also work before an editable install.
 
-## 离线运行包和源码包
+Common environment variables:
 
-源码包保留：
+- `ROUTE_GRAPH_WEBUI_HOST`: backend host, default `127.0.0.1`.
+- `ROUTE_GRAPH_WEBUI_PORT`: backend port, default `8000`.
+- `ROUTE_GRAPH_WEBUI_DATA_DIR`: runtime data directory.
+- `ROUTE_GRAPH_WEBUI_PYTHON`: Python executable override.
+- `ROUTE_GRAPH_WEBUI_ALLOW_LAN=1`: explicitly allow LAN-oriented local debugging.
+- `ROUTE_GRAPH_WEBUI_CORS_ORIGINS`: comma-separated CORS origin override.
 
-- 后端和核心业务 Python 源码、`tests/`、`README.md`、`docs/`、`requirements*.txt`。
-- `webui_frontend/package*.json` 和前端源码。
-- 样例图 `data/graphs/*.json`。
+This is a local file-writing tool; do not expose it to the public internet.
 
-源码包排除：
+## Common Commands
 
-- `webui_frontend/node_modules/`、`webui_frontend/dist/`。
-- 运行态输出：`data/plans/`、`data/missions/`、`data/previews/`、`data/logs/`、`data/webui_state.json`。
-- `__pycache__/` 和 `tools/archive/`。
-
-离线运行包必须额外包含：
-
-- 已构建的 `webui_frontend/dist/`。
-- 启动脚本和 `registered_env_ids.json`。
-- 至少一个必要样例 graph，例如 `data/graphs/DowntownWest.json`。
-
-离线运行包不需要 Node，也不包含 `node_modules/` 或运行态输出。
-
-## 常用命令
-
-后端测试和契约：
+Backend tests and generated contract checks:
 
 ```powershell
 python -B -m pytest tests -q -p no:cacheprovider
-python -B tools\sync_api_schema.py --check
-python -B tools\sync_graph_meta.py --check
+python -B -m route_graph_webui.tools.sync_api_schema --check
+python -B -m route_graph_webui.tools.sync_graph_meta --check
 ```
 
-前端检查：
+Frontend checks:
 
 ```powershell
 npm --prefix webui_frontend test
@@ -119,20 +107,30 @@ npm --prefix webui_frontend run format
 npm --prefix webui_frontend run build
 ```
 
-常用 CLI 入口：
+`npm audit` is an online security review command. It is useful before publishing but is not a hard gate for pure offline startup.
+
+CLI entry points:
 
 ```powershell
-python graph_record.py --help
-python graph_editor.py --help
-python route_planner.py --help
-python mission_export.py --help
-python graph_gui.py --help
-python visualize_graph.py --help
+python -m route_graph_webui.cli.graph_record --help
+python -m route_graph_webui.cli.graph_editor --help
+python -m route_graph_webui.cli.route_planner --help
+python -m route_graph_webui.cli.mission_export --help
+python -m route_graph_webui.cli.graph_gui --help
+python -m route_graph_webui.cli.visualize_graph --help
 ```
 
-可选 media 工具需要额外依赖：
+Six root-level public CLI wrappers remain temporarily as transition entry points, but package module commands are the canonical form.
 
-```powershell
-python -m pip install -r requirements-media.txt
-```
+## Package And Offline Bundle
 
+Python package metadata lives in `pyproject.toml`. Package resources include `route_graph_webui.resources/registered_env_ids.json`; keep that JSON covered by package data.
+
+A source or offline bundle should include:
+
+- `pyproject.toml`, `README.md`, `docs/`, `requirements/`, `start.bat`, and `start_dev.bat`.
+- `src/route_graph_webui/`, including package resources.
+- `data/examples/graphs/*.json`.
+- `webui_frontend/package*.json`, frontend source, and for offline bundles the built `webui_frontend/dist/`.
+
+Do not include runtime outputs in an offline bundle: runtime `graphs`, `plans`, `missions`, `previews`, `logs`, `progress`, `state`, `webui_state.json`, `node_modules`, or `__pycache__`.

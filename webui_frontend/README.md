@@ -10,6 +10,14 @@ Vue/Vite frontend for `route_graph_webui`. Run commands from the project root wi
 
 Example values are documented in `../.env.example`.
 
+The package backend is started from the repository root with:
+
+```powershell
+python -m uvicorn route_graph_webui.backend.server:app --host 127.0.0.1 --port 8000
+```
+
+`../start_dev.bat` runs the backend in reload mode and starts the Vite dev server with the same proxy environment.
+
 ## Scripts
 
 ```powershell
@@ -26,4 +34,4 @@ npm run build
 - `lint` runs lightweight source checks for conflict markers, `debugger`, focused tests, then runs `typecheck`.
 - `format` is a check-mode script for final newline and trailing whitespace.
 - `build` runs typecheck and Vite production build.
-
+- `npm audit` is an online security review command, not a required offline startup gate.

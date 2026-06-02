@@ -17,121 +17,195 @@ from fastapi.testclient import TestClient
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
+from route_graph_webui.storage import json_store as _json_store
 
-import graph_gui as graph_gui_module
-import takeoff_landing_repair as takeoff_landing_repair_module
-import webui_backend.server as server_module
-from graph_canvas_view import GRAPH_GUI_CANVAS_VIEW_DEFAULTS, sync_graph_gui_canvas_view
-from graph_ui_state import (
-    GRAPH_GUI_WEBUI_INPUTS_META_KEY,
-    read_graph_gui_webui_inputs,
-    write_graph_gui_webui_inputs,
+
+from route_graph_webui.runtime_support import runtime as _runtime
+from route_graph_webui.graph import canvas_view as _graph_canvas_view
+from route_graph_webui.graph import conversion as _graph_conversion
+from route_graph_webui.graph import editor as _graph_editor
+from route_graph_webui.graph import grouping as _graph_grouping
+from route_graph_webui.graph import io as _graph_io
+from route_graph_webui.graph import meta as _graph_meta
+from route_graph_webui.graph import model as _graph_model
+from route_graph_webui.graph import ui_state as _graph_ui_state
+from route_graph_webui.graph import validation as _graph_validation
+from route_graph_webui.planning import auto_route_planner as auto_route_planner_module
+from route_graph_webui.planning import route_planner as _route_planner
+from route_graph_webui.apps.workers import route_generation as _route_generation_worker
+from route_graph_webui.backend import server as server_module
+from route_graph_webui.cli import graph_gui as graph_gui_module
+from route_graph_webui.cli import graph_record as _graph_record
+from route_graph_webui.cli import route_planner as _route_planner_cli
+from route_graph_webui.cli import visualize_graph as _visualize_graph
+import route_graph_webui.mission_export as _mission_export
+from route_graph_webui.tools.mission import mission_repair as _mission_repair
+from route_graph_webui.tools.mission import takeoff_landing_repair as takeoff_landing_repair_module
+
+
+def _bind(module: Any, names: tuple[str, ...]) -> None:
+    globals().update({name: getattr(module, name) for name in names})
+
+
+
+_bind(_graph_canvas_view, ("GRAPH_GUI_CANVAS_VIEW_DEFAULTS", "sync_graph_gui_canvas_view"))
+_bind(
+    _graph_ui_state,
+    (
+        "GRAPH_GUI_WEBUI_INPUTS_META_KEY",
+        "read_graph_gui_webui_inputs",
+        "write_graph_gui_webui_inputs",
+    ),
 )
-from graph_record import (
-    _consume_speed_adjustments,
-    _load_or_create_graph,
-    _resolve_output_path,
-    _resolve_runtime_args,
-    build_parser as build_graph_record_parser,
+_bind(
+    _graph_record,
+    (
+        "_consume_speed_adjustments",
+        "_load_or_create_graph",
+        "_resolve_output_path",
+        "_resolve_runtime_args",
+    ),
 )
-from graph_editor import (
-    GraphEditor,
-    INSERTED_NODE_SOURCE_EDGE_ID_META_KEY,
-    INSERTED_NODE_SOURCE_EDGE_RATIO_META_KEY,
+build_graph_record_parser = _graph_record.build_parser
+_bind(
+    _graph_editor,
+    (
+        "GraphEditor",
+        "INSERTED_NODE_SOURCE_EDGE_ID_META_KEY",
+        "INSERTED_NODE_SOURCE_EDGE_RATIO_META_KEY",
+    ),
 )
-from graph_gui import (
-    GRAPH_GUI_AUTO_PLAN_INPUTS_META_KEY,
-    GRAPH_GUI_CANVAS_VIEW_META_KEY,
-    GRAPH_GUI_EXPORT_INPUTS_META_KEY,
-    PREVIEW_STATUS_STALE,
-    PreviewStateModel,
-    _load_validated_graph,
-    _blend_hex_color,
-    distance_point_to_segment,
-    filters_require_auto_keep,
-    format_auto_allowed_route_groups_status,
-    format_auto_excluded_endpoint_groups_status,
-    is_fixed_z_enabled,
-    normalize_auto_group_selection,
-    read_graph_gui_canvas_view,
-    read_graph_gui_export_inputs,
-    resolve_auto_endpoint_group_choices,
-    resolve_canvas_edge_draw_style,
-    resolve_graph_gui_canvas_view,
-    resolve_export_options,
-    resolve_max_total_length_text,
-    resolve_max_frame_count_text,
-    resolve_min_total_length_text,
-    resolve_min_frame_count_text,
-    resolve_node_sample_radius_override_text,
-    read_graph_gui_auto_plan_inputs,
-    write_graph_gui_canvas_view,
-    write_graph_gui_auto_plan_inputs,
-    write_graph_gui_export_inputs,
+_bind(
+    graph_gui_module,
+    (
+        "GRAPH_GUI_AUTO_PLAN_INPUTS_META_KEY",
+        "GRAPH_GUI_CANVAS_VIEW_META_KEY",
+        "GRAPH_GUI_EXPORT_INPUTS_META_KEY",
+        "PREVIEW_STATUS_STALE",
+        "PreviewStateModel",
+        "_load_validated_graph",
+        "_blend_hex_color",
+        "distance_point_to_segment",
+        "filters_require_auto_keep",
+        "format_auto_allowed_route_groups_status",
+        "format_auto_excluded_endpoint_groups_status",
+        "is_fixed_z_enabled",
+        "normalize_auto_group_selection",
+        "read_graph_gui_canvas_view",
+        "read_graph_gui_export_inputs",
+        "resolve_auto_endpoint_group_choices",
+        "resolve_canvas_edge_draw_style",
+        "resolve_graph_gui_canvas_view",
+        "resolve_export_options",
+        "resolve_max_total_length_text",
+        "resolve_max_frame_count_text",
+        "resolve_min_total_length_text",
+        "resolve_min_frame_count_text",
+        "resolve_node_sample_radius_override_text",
+        "read_graph_gui_auto_plan_inputs",
+        "write_graph_gui_canvas_view",
+        "write_graph_gui_auto_plan_inputs",
+        "write_graph_gui_export_inputs",
+    ),
 )
-from json_store import (
-    consume_jsonl_text as _consume_progress_messages,
-    read_json_mapping_if_ready as _read_json_mapping_if_ready,
+_consume_progress_messages = _json_store.consume_jsonl_text
+_read_json_mapping_if_ready = _json_store.read_json_mapping_if_ready
+_bind(
+    _graph_meta,
+    (
+        "DEFAULT_BRIDGE_COLOR",
+        "DEFAULT_GROUP_COLOR",
+        "EDGE_GROUP_COLOR_META_KEY",
+        "EDGE_KIND_BRIDGE",
+        "EDGE_KIND_GROUP",
+        "EDGE_KIND_META_KEY",
+        "GRAPH_BRIDGE_STYLE_META_KEY",
+        "GRAPH_GROUP_CONFIGS_META_KEY",
+        "NODE_SAMPLE_RADIUS_META_KEY",
+    ),
 )
-from graph_schema import (
-    DEFAULT_BRIDGE_COLOR,
-    DEFAULT_GROUP_COLOR,
-    EDGE_GROUP_COLOR_META_KEY,
-    EDGE_KIND_BRIDGE,
-    EDGE_KIND_GROUP,
-    EDGE_KIND_META_KEY,
-    GraphEdge,
-    GraphNode,
-    GraphSchemaError,
-    GRAPH_BRIDGE_STYLE_META_KEY,
-    GRAPH_GROUP_CONFIGS_META_KEY,
-    NODE_SAMPLE_RADIUS_META_KEY,
-    RouteCandidate,
-    RouteEdgePass,
-    RouteGraph,
-    RoutePlan,
-    RouteSegment,
-    candidate_to_plan,
-    derive_graph_color_grouping,
-    ensure_valid_grouped_graph_for_routes,
-    ensure_valid_plan,
-    get_edge_group_color,
-    get_edge_kind,
-    load_graph,
-    read_graph_bridge_style,
-    read_graph_group_configs,
-    physical_edge_key,
-    validate_graph,
-    write_graph_bridge_style,
-    write_graph_group_configs,
+_bind(
+    _graph_model,
+    (
+        "GraphEdge",
+        "GraphNode",
+        "GraphSchemaError",
+        "RouteCandidate",
+        "RouteCandidateSet",
+        "RouteEdgePass",
+        "RouteGraph",
+        "RoutePlan",
+        "RouteSegment",
+        "physical_edge_key",
+    ),
 )
-from mission_export import build_mission_from_plan
-from mission_export import export_candidate_set_missions
-from mission_repair import merge_repair_images, repair_mission_payload
-from auto_route_planner import (
-    AutoPlanningConfig,
-    AutoPlanningExportConfig,
-    AutoRoutePlanningError,
-    auto_plan_routes,
-    compute_anchor_node_scores,
+_bind(_graph_conversion, ("candidate_to_plan",))
+_bind(
+    _graph_grouping,
+    (
+        "derive_graph_color_grouping",
+        "get_edge_group_color",
+        "get_edge_kind",
+        "read_graph_bridge_style",
+        "read_graph_group_configs",
+        "write_graph_bridge_style",
+        "write_graph_group_configs",
+    ),
 )
-from route_generation_worker import _FileMessageQueue, run_route_generation_task
-from route_planner import RoutePlanningError, RoutePlanningProgress, generate_route_candidates
-from runtime import (
-    DEFAULT_RESET_LOCATION,
-    DEFAULT_RESET_ROTATION,
-    KeyboardController,
+_bind(_graph_io, ("load_graph", "load_json", "save_graph"))
+_bind(
+    _graph_validation,
+    (
+        "ensure_valid_grouped_graph_for_routes",
+        "ensure_valid_plan",
+        "validate_graph",
+    ),
 )
-from visualize_graph import (
-    CanvasViewState,
-    build_canvas_projection,
-    compute_canvas_view_center,
-    compute_edge_pass_label_layout,
-    inverse_canvas_view_position,
-    project_point,
-    render_graph_preview,
-    transform_canvas_view_position,
-    unproject_point,
+_bind(
+    _mission_export,
+    (
+        "MissionExportOptions",
+        "build_mission_from_plan",
+        "export_candidate_set_missions",
+    ),
+)
+_bind(_mission_repair, ("merge_repair_images", "repair_mission_payload"))
+_bind(
+    auto_route_planner_module,
+    (
+        "AutoPlanningConfig",
+        "AutoPlanningExportConfig",
+        "AutoRoutePlanningError",
+        "auto_plan_routes",
+        "compute_anchor_node_scores",
+    ),
+)
+_bind(_route_generation_worker, ("_FileMessageQueue", "run_route_generation_task"))
+_bind(
+    _route_planner,
+    (
+        "DEFAULT_MAX_EDGE_PASS_FACTOR",
+        "DEFAULT_MAX_ROUTES",
+        "RoutePlanningError",
+        "RoutePlanningProgress",
+        "generate_route_candidates",
+    ),
+)
+build_route_planner_parser = _route_planner_cli.build_parser
+_bind(_runtime, ("DEFAULT_RESET_LOCATION", "DEFAULT_RESET_ROTATION", "KeyboardController"))
+_bind(
+    _visualize_graph,
+    (
+        "CanvasViewState",
+        "build_canvas_projection",
+        "compute_canvas_view_center",
+        "compute_edge_pass_label_layout",
+        "inverse_canvas_view_position",
+        "project_point",
+        "render_graph_preview",
+        "transform_canvas_view_position",
+        "unproject_point",
+    ),
 )
 
 

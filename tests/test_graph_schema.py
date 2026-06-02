@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from graph_schema import RouteCandidateSet, RoutePlan, load_json, save_graph
-from graph_versioning import CURRENT_EVALUATION_VERSION, CURRENT_GRAPH_SCHEMA_VERSION
-from spelling_compat import (
-    CANONICAL_GRAPH_CREATOR_PREFIX,
-    LEGACY_GRAPH_CREATOR_META_KEY,
-    LEGACY_GRAPH_CREATOR_PREFIX,
-)
 from tests.route_graph_test_helpers import *
+from route_graph_webui.graph.io import load_json, save_graph
+from route_graph_webui.graph.model import RouteCandidateSet, RoutePlan
+from route_graph_webui.graph.versioning import CURRENT_EVALUATION_VERSION, CURRENT_GRAPH_SCHEMA_VERSION
+from route_graph_webui.storage import spelling_compat as _spelling_compat
+
+CANONICAL_GRAPH_CREATOR_PREFIX = _spelling_compat.CANONICAL_GRAPH_CREATOR_PREFIX
+LEGACY_GRAPH_CREATOR_META_KEY = _spelling_compat.LEGACY_GRAPH_CREATOR_META_KEY
+LEGACY_GRAPH_CREATOR_PREFIX = _spelling_compat.LEGACY_GRAPH_CREATOR_PREFIX
 
 class GraphSchemaValidationTests(unittest.TestCase):
     def test_physical_edge_key_is_direction_agnostic(self) -> None:

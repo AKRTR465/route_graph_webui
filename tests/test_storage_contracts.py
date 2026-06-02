@@ -7,8 +7,13 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-import graph_store
-from json_store import append_jsonl, consume_jsonl_text, read_json, write_json_atomic
+from route_graph_webui.storage import graph_store
+from route_graph_webui.storage import json_store as _json_store
+
+append_jsonl = _json_store.append_jsonl
+consume_jsonl_text = _json_store.consume_jsonl_text
+read_json = _json_store.read_json
+write_json_atomic = _json_store.write_json_atomic
 
 
 class StoragePathJsonTests(unittest.TestCase):

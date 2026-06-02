@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from tests.route_graph_test_helpers import *
 
+
 class GraphRecordNormalizationTests(unittest.TestCase):
     def test_graph_record_defaults_to_no_periodic_status_logging(self) -> None:
         parser = build_graph_record_parser()
@@ -400,7 +401,8 @@ class CliBehaviorTests(unittest.TestCase):
             result = subprocess.run(
                 [
                     sys.executable,
-                    str(PROJECT_ROOT / "takeoff_landing_repair.py"),
+                    "-m",
+                    "route_graph_webui.tools.mission.takeoff_landing_repair",
                     "--missions-root",
                     str(missions_root),
                     "--photos-root",

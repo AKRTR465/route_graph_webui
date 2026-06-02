@@ -2,6 +2,7 @@
 webui_frontend/node_modules/
 webui_frontend/dist/
 data/logs/
+data/graphs/
 data/webui_state.json
 data/plans/
 data/missions/
@@ -9,5 +10,6 @@ data/previews/
 __pycache__/
 **/__pycache__/
 *.py[cod]
+*.egg-info/
 .claude/settings.local.json
 tools/archive/

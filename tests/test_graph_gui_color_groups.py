@@ -1,29 +1,28 @@
 import unittest
-from graph_editor import GraphEditor
-from graph_gui import (
-    PENDING_GROUP_STATUS_PREFIX,
-    build_group_control_state,
-    derive_used_group_colors,
-    derive_palette_colors,
-    format_paint_mode_status,
-    format_insert_mode_status,
-    project_point_to_segment_ratio,
-    reconcile_group_configs_for_used_colors,
-    resolve_canvas_primary_click_action,
-    resolve_canvas_secondary_release_action,
-    resolve_palette_brush_color,
-    sync_group_config_state,
-)
-from graph_schema import (
+
+from route_graph_webui.cli import graph_gui as _graph_gui
+from route_graph_webui.graph.editor import GraphEditor
+from route_graph_webui.graph.meta import (
     DEFAULT_GROUP_COLOR,
     EDGE_GROUP_COLOR_META_KEY,
     EDGE_KIND_BRIDGE,
     EDGE_KIND_GROUP,
     EDGE_KIND_META_KEY,
-    GraphEdge,
-    GraphNode,
-    RouteGraph,
 )
+from route_graph_webui.graph.model import GraphEdge, GraphNode, RouteGraph
+
+PENDING_GROUP_STATUS_PREFIX = _graph_gui.PENDING_GROUP_STATUS_PREFIX
+build_group_control_state = _graph_gui.build_group_control_state
+derive_used_group_colors = _graph_gui.derive_used_group_colors
+derive_palette_colors = _graph_gui.derive_palette_colors
+format_paint_mode_status = _graph_gui.format_paint_mode_status
+format_insert_mode_status = _graph_gui.format_insert_mode_status
+project_point_to_segment_ratio = _graph_gui.project_point_to_segment_ratio
+reconcile_group_configs_for_used_colors = _graph_gui.reconcile_group_configs_for_used_colors
+resolve_canvas_primary_click_action = _graph_gui.resolve_canvas_primary_click_action
+resolve_canvas_secondary_release_action = _graph_gui.resolve_canvas_secondary_release_action
+resolve_palette_brush_color = _graph_gui.resolve_palette_brush_color
+sync_group_config_state = _graph_gui.sync_group_config_state
 
 
 def build_test_square_graph() -> RouteGraph:

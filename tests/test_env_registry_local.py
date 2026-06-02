@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+from importlib import resources
 import unittest
-from pathlib import Path
 from unittest import mock
 
-import env_registry
+from route_graph_webui.runtime_support import env_registry
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+REGISTRY_RESOURCE = resources.files("route_graph_webui.resources").joinpath("registered_env_ids.json")
 
 
 class EnvRegistryLocalTests(unittest.TestCase):
@@ -15,7 +15,7 @@ class EnvRegistryLocalTests(unittest.TestCase):
         names, path = env_registry.load_registered_env_names()
 
         self.assertIn("DowntownWest", names)
-        self.assertEqual(PROJECT_ROOT / "registered_env_ids.json", Path(path))
+        self.assertEqual(str(REGISTRY_RESOURCE), path)
 
     def test_extract_env_name_supports_plain_name_and_env_id(self) -> None:
         self.assertEqual("DowntownWest", env_registry.extract_env_name("DowntownWest"))

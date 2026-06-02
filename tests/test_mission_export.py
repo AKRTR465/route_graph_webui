@@ -3,7 +3,6 @@ from __future__ import annotations
 import time
 
 from tests.route_graph_test_helpers import *
-from mission_export import MissionExportOptions
 
 class MissionExportValidationTests(unittest.TestCase):
     def test_mission_export_options_parse_boolean_strings(self) -> None:

@@ -8,8 +8,12 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-import composed_video
-from spelling_compat import CANONICAL_PHOTOS_DIR_NAME, LEGACY_PHOTOS_DIR_NAME
+from route_graph_webui.storage import spelling_compat as _spelling_compat
+from route_graph_webui.tools.media import composed_video
+
+
+CANONICAL_PHOTOS_DIR_NAME = _spelling_compat.CANONICAL_PHOTOS_DIR_NAME
+LEGACY_PHOTOS_DIR_NAME = _spelling_compat.LEGACY_PHOTOS_DIR_NAME
 
 
 class ComposedVideoTests(unittest.TestCase):

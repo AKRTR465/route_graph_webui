@@ -1,6 +1,6 @@
 # Graph JSON Schema
 
-Graph files live under `data/graphs` in the active data directory. New writes include `schema_version`; old files without a version are migrated on read.
+Graph files live under the active data directory's `graphs` folder. Repository examples live under `data/examples/graphs`; on first startup, an empty runtime `graphs` folder is initialized from those examples. New writes include `schema_version`; old files without a version are migrated on read.
 
 ## Top Level
 
@@ -36,7 +36,7 @@ Each edge contains:
 
 ## Metadata Compatibility
 
-Graph meta constants are sourced from `graph_meta.py` and synchronized to `webui_frontend/src/types/graph-meta.ts`.
+Graph meta constants are sourced from `route_graph_webui.graph.meta` and synchronized to `webui_frontend/src/types/graph-meta.ts`.
 
 Legacy `graph_gui_*` meta keys remain compatible for now. Legacy creator values beginning with `route_garph.` are accepted on read and normalized to `route_graph.` on new writes, preserving the original value in `legacy_creator`.
 
@@ -45,8 +45,7 @@ Legacy `graph_gui_*` meta keys remain compatible for now. Legacy creator values 
 Use:
 
 ```powershell
-python graph_editor.py validate --graph data/graphs/DowntownWest.json
+python -m route_graph_webui.cli.graph_editor validate --graph data/examples/graphs/DowntownWest.json
 ```
 
 Validation checks duplicate edges, missing nodes, graph grouping constraints, same-color intersections, bridge exceptions, and schema field shapes.
-
