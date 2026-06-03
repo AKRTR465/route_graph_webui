@@ -3,6 +3,8 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
 const appVue = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8')
+const canvasStageVue = readFileSync(new URL('../src/components/CanvasStage.vue', import.meta.url), 'utf8')
+const graph3DPreviewVue = readFileSync(new URL('../src/components/Graph3DPreview.vue', import.meta.url), 'utf8')
 const autoPlanJobComposable = readFileSync(
   new URL('../src/composables/useAutoPlanJob.ts', import.meta.url),
   'utf8',
@@ -61,6 +63,60 @@ test('mission config payload carries export geometry and smoothing fields', () =
     'buildMissionConfigRequestPayload as buildMissionConfigRequestPayloadPure',
     'function buildMissionConfigRequestPayload()',
     'return buildMissionConfigRequestPayloadPure(exportForm, DEFAULT_SMOOTHING_INPUTS)',
+  ])
+})
+
+test('3d toolbar exposes group normalization and group focus controls only in 3d mode', () => {
+  assertContainsInOrder(canvasStageVue, [
+    "v-if=\"canvasDisplayMode === '3d'\"",
+    'groupNormalizedZLayerEnabled',
+    "emit('toggle-group-normalized-z-layer')",
+    '分组归一化',
+  ])
+
+  assertContainsInOrder(canvasStageVue, [
+    'function handleGroupFocusChange(event: Event)',
+    "emit('set-graph3d-group-focus'",
+    'class="group-switch-chip"',
+    'aria-label="3D 分组显示"',
+  ])
+
+  assertContainsInOrder(appVue, [
+    'const graph3DGroupFocusColor = ref<string | null>(null)',
+    ':graph3d-group-focus-color="graph3DGroupFocusColor"',
+    '@set-graph3d-group-focus="setGraph3DGroupFocusColor"',
+    ':group-focus-color="graph3DGroupFocusColor"',
+  ])
+})
+
+test('3d viewport controls use independent camera lock state and 2d-style minimap panel', () => {
+  assertContainsInOrder(appVue, [
+    'const graph3DViewportLocked = ref(false)',
+    'const GRAPH_3D_VIEWPORT_LOCK_STORAGE_KEY',
+    'function setGraph3DViewportLockState(',
+    'function toggleGraph3DViewportLock()',
+  ])
+
+  assertContainsInOrder(appVue, [
+    ':camera-locked="graph3DViewportLocked"',
+    '@toggle-camera-lock="toggleGraph3DViewportLock"',
+  ])
+
+  assertContainsInOrder(graph3DPreviewVue, [
+    'class="graph-3d-controls"',
+    'class="graph-3d-minimap"',
+    'minimapModel.edges',
+    'minimapModel.nodes',
+    'class="graph-3d-controls__buttons"',
+    '@click="zoomIn"',
+    '@click="zoomOut"',
+    '@click="resetCamera()"',
+    "emit('toggle-camera-lock')",
+  ])
+
+  assertContainsInOrder(graph3DPreviewVue, [
+    'const CAMERA_FIT_DISTANCE_SCALE = 0.54',
+    'distance = (sphere.radius / Math.sin(fov / 2)) * CAMERA_FIT_DISTANCE_SCALE',
   ])
 })
 

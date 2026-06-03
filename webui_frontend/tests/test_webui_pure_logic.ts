@@ -19,6 +19,16 @@ import {
 } from '../src/lib/mission-config.ts'
 import { buildPreviewPathSegments, computeChevronGlyph } from '../src/lib/preview-path.ts'
 import { transformGraphPoint } from '../src/lib/graph-view.ts'
+import {
+  applyCanvasViewToGraphXY,
+  computeGraph3DSceneMetrics,
+  projectGraphPositionToScene,
+  resolveGraph3DGrouping,
+  resolveGraph3DNodePositions,
+  type CanvasViewStateLike,
+} from '../src/lib/graph-3d-view.ts'
+import { EDGE_GROUP_COLOR_META_KEY, EDGE_KIND_GROUP, EDGE_KIND_META_KEY } from '../src/types/graph-meta.ts'
+import type { RouteCandidateSet, RouteGraph } from '../src/types/route-graph.ts'
 
 function createMemoryStorage() {
   const values = new Map<string, string>()
@@ -155,4 +165,157 @@ test('preview path and graph view helpers are deterministic', () => {
     transformGraphPoint({ x: 2, y: 5 }, { rotationQuadrants: 1, flipHorizontal: true, flipVertical: false }),
     { x: 5, y: 2 },
   )
+})
+
+function createMinimal3DGraph(): RouteGraph {
+  return {
+    schema_version: 1,
+    env_id: 'env',
+    graph_name: 'z_graph',
+    default_altitude: null,
+    nodes: [
+      { id: 'A', name: 'A', position: [0, 0, 100], yaw_hint: null, tags: [], meta: {} },
+      { id: 'B', name: 'B', position: [1000, 0, 300], yaw_hint: null, tags: [], meta: {} },
+    ],
+    edges: [
+      {
+        id: 'E001',
+        from: 'A',
+        to: 'B',
+        weight: 1000,
+        enabled: true,
+        bidirectional: true,
+        meta: { [EDGE_KIND_META_KEY]: EDGE_KIND_GROUP, [EDGE_GROUP_COLOR_META_KEY]: '#FF0000' },
+      },
+    ],
+    meta: {},
+  }
+}
+
+function createMinimalCandidateSet(): RouteCandidateSet {
+  return {
+    evaluation_version: 1,
+    env_id: 'env',
+    graph_name: 'z_graph',
+    anchor_nodes: ['A', 'B'],
+    candidates: [
+      {
+        candidate_id: 'C001',
+        rank: 1,
+        planned_nodes: ['A', 'B'],
+        edge_passes: [
+          {
+            pass_index: 1,
+            edge_id: 'E001',
+            from_node: 'A',
+            to_node: 'B',
+            segment_index: 0,
+            local_index: 1,
+          },
+        ],
+        segments: [],
+        total_length: 1000,
+        selected: true,
+        meta: {},
+      },
+    ],
+    node_lookup: {
+      A: { id: 'A', name: 'A', position: [0, 0, 200], yaw_hint: null, tags: [], meta: {} },
+      B: { id: 'B', name: 'B', position: [1000, 0, 200], yaw_hint: null, tags: [], meta: {} },
+    },
+    selected_candidate_ids: ['C001'],
+    meta: {
+      node_group_lookup_v1: {
+        A: '#FF0000',
+        B: '#FF0000',
+      },
+      group_average_z_lookup_v1: {
+        '#FF0000': 220,
+      },
+    },
+  }
+}
+
+test('3d z layers default to recorded z and can switch to group normalized z from candidate meta', () => {
+  const graph = createMinimal3DGraph()
+  const candidateSet = createMinimalCandidateSet()
+
+  const recordedPositions = resolveGraph3DNodePositions(graph, candidateSet, 'recorded')
+  const groupNormalizedPositions = resolveGraph3DNodePositions(graph, candidateSet, 'groupNormalized')
+
+  assert.deepEqual(recordedPositions.get('A'), [0, 0, 100])
+  assert.deepEqual(recordedPositions.get('B'), [1000, 0, 300])
+  assert.deepEqual(groupNormalizedPositions.get('A'), [0, 0, 220])
+  assert.deepEqual(groupNormalizedPositions.get('B'), [1000, 0, 220])
+})
+
+test('3d group normalized layer falls back to graph-derived group averages without candidates', () => {
+  const graph = createMinimal3DGraph()
+  const grouping = resolveGraph3DGrouping(graph, null)
+  const groupNormalizedPositions = resolveGraph3DNodePositions(graph, null, 'groupNormalized')
+
+  assert.deepEqual(grouping.groupColors, ['#FF0000'])
+  assert.deepEqual(groupNormalizedPositions.get('A'), [0, 0, 200])
+  assert.deepEqual(groupNormalizedPositions.get('B'), [1000, 0, 200])
+})
+
+test('3d group normalized layer preserves conflicting and ungrouped node z', () => {
+  const graph: RouteGraph = {
+    schema_version: 1,
+    env_id: 'env',
+    graph_name: 'group_conflict_graph',
+    default_altitude: null,
+    nodes: [
+      { id: 'A', name: 'A', position: [0, 0, 100], yaw_hint: null, tags: [], meta: {} },
+      { id: 'B', name: 'B', position: [100, 0, 300], yaw_hint: null, tags: [], meta: {} },
+      { id: 'C', name: 'C', position: [200, 0, 500], yaw_hint: null, tags: [], meta: {} },
+      { id: 'D', name: 'D', position: [300, 0, 700], yaw_hint: null, tags: [], meta: {} },
+    ],
+    edges: [
+      {
+        id: 'E_RED',
+        from: 'A',
+        to: 'B',
+        weight: 100,
+        enabled: true,
+        bidirectional: true,
+        meta: { [EDGE_KIND_META_KEY]: EDGE_KIND_GROUP, [EDGE_GROUP_COLOR_META_KEY]: '#FF0000' },
+      },
+      {
+        id: 'E_BLUE',
+        from: 'B',
+        to: 'C',
+        weight: 100,
+        enabled: true,
+        bidirectional: true,
+        meta: { [EDGE_KIND_META_KEY]: EDGE_KIND_GROUP, [EDGE_GROUP_COLOR_META_KEY]: '#0000FF' },
+      },
+    ],
+    meta: {},
+  }
+
+  const groupNormalizedPositions = resolveGraph3DNodePositions(graph, null, 'groupNormalized')
+
+  assert.deepEqual(groupNormalizedPositions.get('A'), [0, 0, 100])
+  assert.deepEqual(groupNormalizedPositions.get('B'), [100, 0, 300])
+  assert.deepEqual(groupNormalizedPositions.get('C'), [200, 0, 500])
+  assert.deepEqual(groupNormalizedPositions.get('D'), [300, 0, 700])
+})
+
+test('3d route transform shares 2d quadrant and flip semantics without changing z', () => {
+  const graph = createMinimal3DGraph()
+  const positions = resolveGraph3DNodePositions(graph, null, 'recorded')
+  const metrics = computeGraph3DSceneMetrics(graph, positions)
+  const viewState: CanvasViewStateLike = {
+    rotationQuadrants: 1,
+    flipHorizontal: true,
+    flipVertical: false,
+  }
+
+  assert.deepEqual(applyCanvasViewToGraphXY([502, 5, 300], metrics, viewState), { x: 5, y: 2 })
+
+  const scenePoint = projectGraphPositionToScene([502, 5, 250], metrics, viewState, 4)
+  assert.equal(scenePoint.x, 0.6)
+  assert.equal(scenePoint.z, -0.24)
+  assert.equal(scenePoint.y, 24)
 })

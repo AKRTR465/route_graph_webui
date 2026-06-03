@@ -5,9 +5,14 @@ defineProps<{
   updatingCanvasView: boolean
   flipHorizontal: boolean
   flipVertical: boolean
+  canvasDisplayMode: '2d' | '3d'
+  groupNormalizedZLayerEnabled: boolean
+  groupColorOptions: string[]
+  graph3dGroupFocusColor: string | null
   canvasViewSummaryText: string
   nodeDragStatusText: string
   viewportLockStatusText: string
+  resolveGroupDisplayLabel: (color: string) => string
 }>()
 
 const emit = defineEmits<{
@@ -16,9 +21,17 @@ const emit = defineEmits<{
   (event: 'toggle-flip-horizontal'): void
   (event: 'toggle-flip-vertical'): void
   (event: 'reset-view'): void
+  (event: 'set-canvas-display-mode', mode: '2d' | '3d'): void
+  (event: 'toggle-group-normalized-z-layer'): void
+  (event: 'set-graph3d-group-focus', color: string | null): void
 }>()
 
 const waveCanvas = ref<HTMLCanvasElement | null>(null)
+
+function handleGroupFocusChange(event: Event) {
+  const target = event.target as HTMLSelectElement | null
+  emit('set-graph3d-group-focus', target?.value || null)
+}
 
 defineExpose({
   waveCanvas,
@@ -53,6 +66,46 @@ defineExpose({
             垂直翻转
           </button>
           <button class="chip-button" :disabled="updatingCanvasView" @click="emit('reset-view')">重置视图</button>
+          <span class="segmented-chip" role="group" aria-label="画布维度">
+            <button
+              class="segmented-chip__button"
+              :class="{ 'segmented-chip__button--active': canvasDisplayMode === '2d' }"
+              type="button"
+              @click="emit('set-canvas-display-mode', '2d')"
+            >
+              2D
+            </button>
+            <button
+              class="segmented-chip__button"
+              :class="{ 'segmented-chip__button--active': canvasDisplayMode === '3d' }"
+              type="button"
+              @click="emit('set-canvas-display-mode', '3d')"
+            >
+              3D
+            </button>
+          </span>
+          <button
+            v-if="canvasDisplayMode === '3d'"
+            class="chip-button"
+            :class="{ 'chip-button--active': groupNormalizedZLayerEnabled }"
+            type="button"
+            @click="emit('toggle-group-normalized-z-layer')"
+          >
+            分组归一化
+          </button>
+          <label v-if="canvasDisplayMode === '3d'" class="group-switch-chip">
+            <span>分组</span>
+            <select
+              :value="graph3dGroupFocusColor ?? ''"
+              aria-label="3D 分组显示"
+              @change="handleGroupFocusChange"
+            >
+              <option value="">全部</option>
+              <option v-for="color in groupColorOptions" :key="color" :value="color">
+                {{ resolveGroupDisplayLabel(color) }}
+              </option>
+            </select>
+          </label>
         </div>
         <p class="hint-text">{{ canvasViewSummaryText }}</p>
       </div>

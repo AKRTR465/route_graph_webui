@@ -619,6 +619,56 @@ textarea {
   background:linear-gradient(135deg,#dc2626,#b91c1c);
 }
 
+.segmented-chip {
+  background:#102a4314;
+  border-radius:999px;
+  align-items:center;
+  padding:.18rem;
+  display:inline-flex;
+}
+
+.segmented-chip__button {
+  color:var(--ink-strong);
+  background:transparent;
+  border:0;
+  border-radius:999px;
+  min-width:2.45rem;
+  padding:.54rem .78rem;
+  font:inherit;
+  font-weight:800;
+  line-height:1;
+  cursor:pointer;
+}
+
+.segmented-chip__button--active {
+  color:#7c2d12;
+  background:#fff7ed;
+  box-shadow:inset 0 0 0 1px #f9731647;
+}
+
+.group-switch-chip {
+  color:var(--ink-strong);
+  background:#102a4314;
+  border-radius:999px;
+  align-items:center;
+  gap:.45rem;
+  min-height:2.45rem;
+  padding:.2rem .4rem .2rem .75rem;
+  font-weight:700;
+  display:inline-flex;
+}
+
+.group-switch-chip select {
+  color:var(--ink-strong);
+  background:#ffffffe0;
+  border:1px solid #102a4314;
+  border-radius:999px;
+  min-width:6.4rem;
+  max-width:12rem;
+  padding:.42rem 1.8rem .42rem .75rem;
+  font-weight:700;
+}
+
 .anchor-strip,.token-row,.color-swatch-row {
   flex-wrap:wrap;
   gap:.55rem;

@@ -29,6 +29,7 @@ import CandidatePanel from './components/CandidatePanel.vue'
 import CanvasStage from './components/CanvasStage.vue'
 import EdgeInspector from './components/EdgeInspector.vue'
 import ExportPanel from './components/ExportPanel.vue'
+import Graph3DPreview from './components/Graph3DPreview.vue'
 import GroupConfigPanel from './components/GroupConfigPanel.vue'
 import NodeInspector from './components/NodeInspector.vue'
 import PalettePanel from './components/PalettePanel.vue'
@@ -63,6 +64,7 @@ import {
 import { resolveEdgeCreationIntent as resolveSharedEdgeCreationIntent } from './lib/edge-intent'
 import { resolveNodePulseState } from './lib/node-pulse'
 import { depthCardDirective, type DepthCardOptions } from './lib/depth-card'
+import type { CanvasDisplayMode, Graph3DZLayerMode } from './lib/graph-3d-view'
 import { useAutoPlanJob, useAutoPlanJobStatus } from './composables/useAutoPlanJob'
 import { useGraphMutations } from './composables/useGraphMutations'
 import { useGraphSelection } from './composables/useGraphSelection'
@@ -287,6 +289,10 @@ const canvasViewState = reactive<CanvasViewState>({
   flipHorizontal: false,
   flipVertical: false,
 })
+const canvasDisplayMode = ref<CanvasDisplayMode>('2d')
+const zLayerMode = ref<Graph3DZLayerMode>('recorded')
+const graph3DGroupFocusColor = ref<string | null>(null)
+const graph3DViewportLocked = ref(false)
 
 const savingNode = ref(false)
 const resettingNodePosition = ref(false)
@@ -311,6 +317,7 @@ const viewportTransform = ref<ViewportTransform>({ x: 0, y: 0, zoom: 1 })
 const previewFlowNowMs = ref(0)
 const previewFlowRafId = ref<number | null>(null)
 const canvasStage = ref<InstanceType<typeof CanvasStage> | null>(null)
+const graph3DPreview = ref<InstanceType<typeof Graph3DPreview> | null>(null)
 const atmosphereWaveCanvas = computed(() => canvasStage.value?.waveCanvas ?? null)
 const atmosphereWaveRafId = ref<number | null>(null)
 const atmosphereWaveResizeObserver = ref<ResizeObserver | null>(null)
@@ -387,6 +394,9 @@ const canvasViewSummaryText = computed(() => {
   }
   return parts.length ? `视图：${parts.join(' · ')}` : '视图：默认'
 })
+const groupNormalizedZLayerEnabled = computed(
+  () => canvasDisplayMode.value === '3d' && zLayerMode.value === 'groupNormalized',
+)
 
 const selectedNode = computed<GraphNode | null>(() => {
   if (!primarySelectedNodeId.value) {
@@ -615,7 +625,13 @@ const selectedEdgeColorText = computed(() => {
   return `组色 ${resolveEdgeBaseColor(selectedEdge.value)}`
 })
 const viewportLockStatusText = computed(() =>
-  viewportLocked.value ? '画布视口已锁定' : '画布视口已解锁',
+  canvasDisplayMode.value === '3d'
+    ? graph3DViewportLocked.value
+      ? '3D 视角已锁定'
+      : '3D 视角已解锁'
+    : viewportLocked.value
+      ? '画布视口已锁定'
+      : '画布视口已解锁',
 )
 const canCreateEdgeFromSelection = computed(() => selectedNodeIds.value.length === 2)
 const canRemoveEdgeFromSelection = computed(
@@ -654,6 +670,7 @@ const INITIALIZE_MAX_ATTEMPTS = 20
 const CANVAS_NODE_GESTURE_WINDOW_MS = 300
 const CANVAS_VIEW_META_KEY = GRAPH_GUI_CANVAS_VIEW_META_KEY
 const VIEWPORT_LOCK_STORAGE_KEY = 'route_graph_webui_viewport_lock_v1'
+const GRAPH_3D_VIEWPORT_LOCK_STORAGE_KEY = 'route_graph_webui_3d_viewport_lock_v1'
 const NODE_DIAMETER_PX = 16
 const NODE_RADIUS_PX = NODE_DIAMETER_PX / 2
 const PREVIEW_CHEVRON_PATH = 'M -4 -2.2 L 0 1.8 L 4 -2.2 L 2.8 -3.4 L 0 -0.6 L -2.8 -3.4 Z'
@@ -687,6 +704,27 @@ function writeStoredViewportLock(locked: boolean) {
     window.localStorage.setItem(VIEWPORT_LOCK_STORAGE_KEY, JSON.stringify(locked))
   } catch {
     // Ignore storage failures; the in-memory viewport lock still works.
+  }
+}
+
+function readStoredGraph3DViewportLock() {
+  try {
+    const raw = window.localStorage.getItem(GRAPH_3D_VIEWPORT_LOCK_STORAGE_KEY)
+    if (!raw) {
+      return false
+    }
+    const parsed = JSON.parse(raw)
+    return typeof parsed === 'boolean' ? parsed : false
+  } catch {
+    return false
+  }
+}
+
+function writeStoredGraph3DViewportLock(locked: boolean) {
+  try {
+    window.localStorage.setItem(GRAPH_3D_VIEWPORT_LOCK_STORAGE_KEY, JSON.stringify(locked))
+  } catch {
+    // Ignore storage failures; the in-memory 3D camera lock still works.
   }
 }
 
@@ -724,6 +762,9 @@ watch(
     sessionPaletteColors.value = sessionPaletteColors.value.filter((color) => !allowed.has(color))
     if (activeGroupColor.value && !allowed.has(activeGroupColor.value)) {
       activeGroupColor.value = colors[0] ?? null
+    }
+    if (graph3DGroupFocusColor.value && !allowed.has(graph3DGroupFocusColor.value)) {
+      graph3DGroupFocusColor.value = null
     }
     paintColor.value = resolvePaletteBrushColor(
       colors,
@@ -1417,6 +1458,11 @@ function toggleNodeSelection(nodeId: string) {
 function selectEdge(edgeId: string) {
   setNodeSelection([], null)
   selectedEdgeId.value = edgeId
+}
+
+function clearGraphSelection() {
+  setNodeSelection([], null)
+  selectedEdgeId.value = null
 }
 
 function invalidateCandidateOutputs() {
@@ -2324,6 +2370,14 @@ async function fitGraphToViewport() {
 }
 
 async function requestFitGraphToViewport() {
+  if (canvasDisplayMode.value === '3d') {
+    if (graph3DViewportLocked.value) {
+      setBanner('3D 视角已锁定', 'info')
+      return
+    }
+    graph3DPreview.value?.resetCamera()
+    return
+  }
   if (viewportLocked.value) {
     setBanner('画布视口已锁定', 'info')
     return
@@ -2352,6 +2406,29 @@ function setViewportLockState(
 
 function toggleViewportLock() {
   setViewportLockState(!viewportLocked.value, { announce: true })
+}
+
+function setGraph3DViewportLockState(
+  nextLocked: boolean,
+  {
+    persist = true,
+    announce = false,
+  }: {
+    persist?: boolean
+    announce?: boolean
+  } = {},
+) {
+  graph3DViewportLocked.value = nextLocked
+  if (persist) {
+    writeStoredGraph3DViewportLock(nextLocked)
+  }
+  if (announce) {
+    setBanner(nextLocked ? '3D 视角已锁定' : '3D 视角已解锁', 'info')
+  }
+}
+
+function toggleGraph3DViewportLock() {
+  setGraph3DViewportLockState(!graph3DViewportLocked.value, { announce: true })
 }
 
 function handleViewportZoomIn() {
@@ -2569,13 +2646,16 @@ async function loadGraphState(
 async function initialize() {
   try {
     const shouldRestoreViewportLock = readStoredViewportLock()
+    const shouldRestoreGraph3DViewportLock = readStoredGraph3DViewportLock()
     setViewportLockState(false, { persist: false })
+    setGraph3DViewportLockState(false, { persist: false })
     const catalog = await fetchGraphCatalog()
     graphCatalog.value = [...catalog.graphs]
     const restoreOutcome = await loadGraphState(catalog.default_graph, { fit: false, quiet: true })
     if (graphEnvelope.value) {
       await fitGraphToViewport()
       setViewportLockState(shouldRestoreViewportLock, { persist: false })
+      setGraph3DViewportLockState(shouldRestoreGraph3DViewportLock, { persist: false })
     }
     if (graphEnvelope.value && restoreOutcome === 'none') {
       setBanner(`网页控制台已就绪，当前图：${graphEnvelope.value.summary.graph_name}`, 'success')
@@ -2620,6 +2700,29 @@ async function refreshCurrentGraph() {
   }
 }
 
+function setCanvasDisplayMode(nextMode: CanvasDisplayMode) {
+  canvasDisplayMode.value = nextMode
+  if (nextMode === '3d') {
+    void nextTick(() => {
+      if (!graph3DViewportLocked.value) {
+        graph3DPreview.value?.resetCamera()
+      }
+    })
+    return
+  }
+  void nextTick(() => {
+    syncViewportTransformFromFlow()
+  })
+}
+
+function toggleGroupNormalizedZLayer() {
+  zLayerMode.value = zLayerMode.value === 'groupNormalized' ? 'recorded' : 'groupNormalized'
+}
+
+function setGraph3DGroupFocusColor(nextColor: string | null) {
+  graph3DGroupFocusColor.value = nextColor && groupColorOptions.value.includes(nextColor) ? nextColor : null
+}
+
 function rotateCanvasLeft() {
   void persistCanvasViewState({
     rotationQuadrants: (canvasViewState.rotationQuadrants + 3) % 4,
@@ -2659,8 +2762,16 @@ function resetCanvasView() {
       flipHorizontal: false,
       flipVertical: false,
     },
-    { fit: true },
-  )
+    { fit: canvasDisplayMode.value !== '3d' },
+  ).then(() => {
+    if (canvasDisplayMode.value === '3d') {
+      if (graph3DViewportLocked.value) {
+        setBanner('3D 视角已锁定，仅重置路线图方向', 'info')
+        return
+      }
+      graph3DPreview.value?.resetCamera()
+    }
+  })
 }
 
 async function runGraphValidation() {
@@ -2687,6 +2798,14 @@ async function runGraphValidation() {
 }
 
 function handlePaneClick() {}
+
+function handleGraph3DNodeSelect(nodeId: string) {
+  selectOnlyNode(nodeId)
+}
+
+function handleGraph3DEdgeSelect(edgeId: string) {
+  selectEdge(edgeId)
+}
 
 function handleNodeClick(payload: NodeMouseEvent) {
   if (isPaintModeActive.value) {
@@ -3888,7 +4007,7 @@ onBeforeUnmount(() => {
       :current-graph-path="currentGraphPath"
       :loading-graph="loadingGraph"
       :validating-graph="validatingGraph"
-      :viewport-locked="viewportLocked"
+      :viewport-locked="canvasDisplayMode === '3d' ? graph3DViewportLocked : viewportLocked"
       :tracking-depth-card="trackingDepthCard"
       @graph-change="handleGraphPicker"
       @refresh="refreshCurrentGraph"
@@ -3985,16 +4104,25 @@ onBeforeUnmount(() => {
         :updating-canvas-view="updatingCanvasView"
         :flip-horizontal="canvasViewState.flipHorizontal"
         :flip-vertical="canvasViewState.flipVertical"
+        :canvas-display-mode="canvasDisplayMode"
+        :group-normalized-z-layer-enabled="groupNormalizedZLayerEnabled"
+        :group-color-options="groupColorOptions"
+        :graph3d-group-focus-color="graph3DGroupFocusColor"
         :canvas-view-summary-text="canvasViewSummaryText"
         :node-drag-status-text="nodeDragStatusText"
         :viewport-lock-status-text="viewportLockStatusText"
+        :resolve-group-display-label="resolveGroupDisplayLabel"
         @rotate-left="rotateCanvasLeft"
         @rotate-right="rotateCanvasRight"
         @toggle-flip-horizontal="toggleCanvasFlipHorizontal"
         @toggle-flip-vertical="toggleCanvasFlipVertical"
         @reset-view="resetCanvasView"
+        @set-canvas-display-mode="setCanvasDisplayMode"
+        @toggle-group-normalized-z-layer="toggleGroupNormalizedZLayer"
+        @set-graph3d-group-focus="setGraph3DGroupFocusColor"
       >
           <VueFlow
+            v-if="canvasDisplayMode === '2d'"
             class="graph-flow"
             :nodes="flowNodes"
             :edges="flowEdges"
@@ -4081,8 +4209,26 @@ onBeforeUnmount(() => {
               </template>
             </Controls>
           </VueFlow>
+          <Graph3DPreview
+            v-else
+            ref="graph3DPreview"
+            :graph="graph"
+            :candidate-set="candidateSet"
+            :selected-candidate-id="selectedCandidateId"
+            :preview-mission="previewMission"
+            :selected-node-ids="selectedNodeIds"
+            :selected-edge-id="selectedEdgeId"
+            :group-focus-color="graph3DGroupFocusColor"
+            :camera-locked="graph3DViewportLocked"
+            :canvas-view-state="canvasViewState"
+            :z-layer-mode="zLayerMode"
+            @select-node="handleGraph3DNodeSelect"
+            @select-edge="handleGraph3DEdgeSelect"
+            @clear-selection="clearGraphSelection"
+            @toggle-camera-lock="toggleGraph3DViewportLock"
+          />
           <svg
-            v-if="previewPolylinePoints"
+            v-if="canvasDisplayMode === '2d' && previewPolylinePoints"
             class="mission-preview-overlay"
             aria-hidden="true"
           >
