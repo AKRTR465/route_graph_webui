@@ -22,6 +22,7 @@ from route_graph_webui.graph.model import (
     RouteEdgePass,
     RoutePlan,
     RouteSegment,
+    edge_planning_weight,
 )
 from route_graph_webui.graph.validation import ensure_valid_graph, ensure_valid_grouped_graph_for_routes
 from route_graph_webui.shared.time_utils import timestamp_now
@@ -134,12 +135,14 @@ _prepare_candidate_set_graph_context = prepare_candidate_set_graph_context
 
 def _build_adjacency(graph) -> dict[str, list[tuple[str, float, str]]]:
     adjacency: dict[str, list[tuple[str, float, str]]] = {node.id: [] for node in graph.nodes}
+    node_map = graph.node_map
     for edge in graph.edges:
         if not edge.enabled:
             continue
-        adjacency.setdefault(edge.from_node, []).append((edge.to_node, float(edge.weight), edge.id))
+        weight = edge_planning_weight(edge, node_map)
+        adjacency.setdefault(edge.from_node, []).append((edge.to_node, weight, edge.id))
         if edge.bidirectional:
-            adjacency.setdefault(edge.to_node, []).append((edge.from_node, float(edge.weight), edge.id))
+            adjacency.setdefault(edge.to_node, []).append((edge.from_node, weight, edge.id))
     for node_id in adjacency:
         adjacency[node_id].sort(key=lambda item: (item[1], item[0], item[2]))
     return adjacency
@@ -241,6 +244,7 @@ def _build_edge_passes_and_segments(
     edge_signatures: list[tuple[str, str, str]],
 ) -> tuple[list[RouteEdgePass], list[RouteSegment]]:
     edge_map = graph.edge_map
+    node_map = graph.node_map
     segments: list[RouteSegment] = []
     edge_passes: list[RouteEdgePass] = []
 
@@ -281,7 +285,7 @@ def _build_edge_passes_and_segments(
         edge_passes.append(edge_pass)
         current_segment_edge_passes.append(edge_pass)
         current_segment_nodes.append(to_node)
-        current_segment_length += float(edge_map[edge_id].weight)
+        current_segment_length += edge_planning_weight(edge_map[edge_id], node_map)
         current_node = to_node
 
         while target_anchor_index < len(anchors) and current_node == anchors[target_anchor_index]:

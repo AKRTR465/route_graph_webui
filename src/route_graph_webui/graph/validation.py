@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Mapping
-
-from route_graph_webui.shared.geometry import segments_intersect_2d
+import math
+from typing import Mapping
 
 from .conversion import resolve_plan_edge_passes
 from .grouping import (
     GraphColorGrouping,
     derive_graph_color_grouping,
-    get_edge_group_color,
     get_edge_kind,
-    get_node_sample_radius_override,
     normalize_hex_color,
 )
 from .meta import (
@@ -22,38 +19,43 @@ from .meta import (
     GRAPH_GROUP_CONFIGS_META_KEY,
 )
 from .model import GraphSchemaError, GraphValidationIssue, GraphValidationReport, RouteGraph, RoutePlan
+from .versioning import CURRENT_GRAPH_FORMAT_VERSION
 
 
 def validate_graph(graph: RouteGraph) -> GraphValidationReport:
     report = GraphValidationReport()
     node_ids: set[str] = set()
     edge_ids: set[str] = set()
-    directed_pairs: dict[tuple[str, str], str] = {}
-    bidirectional_pairs: dict[tuple[str, str], str] = {}
 
-    if not graph.env_id:
-        report.add("error", "missing-env-id", "RouteGraph `env_id` must not be empty")
-    if not graph.graph_name:
-        report.add("error", "missing-graph-name", "RouteGraph `graph_name` must not be empty")
-    if not graph.nodes:
-        report.add("warning", "empty-graph", "RouteGraph contains no nodes")
+    if graph.format_version != CURRENT_GRAPH_FORMAT_VERSION:
+        report.add("error", "invalid-format-version", f"RouteGraph `format_version` must be {CURRENT_GRAPH_FORMAT_VERSION}")
+    if graph.graph_id is not None and not graph.graph_id.strip():
+        report.add("error", "missing-id", "RouteGraph `id` must not be empty")
+    if not str(graph.graph_name).strip():
+        report.add("error", "missing-name", "RouteGraph `name` must not be empty")
+    if not isinstance(graph.coordinate_system, Mapping):
+        report.add("error", "invalid-coordinate-system", "RouteGraph `coordinate_system` must be an object")
 
     for node in graph.nodes:
+        if not node.id:
+            report.add("error", "missing-node-id", "GraphNode `id` must not be empty")
         if node.id in node_ids:
             report.add("error", "duplicate-node-id", f"Duplicate node id `{node.id}`", [node.id])
         node_ids.add(node.id)
-        try:
-            get_node_sample_radius_override(node)
-        except GraphSchemaError as exc:
-            report.add(
-                "error",
-                "invalid-node-sample-radius",
-                str(exc),
-                [node.id],
-            )
+        if len(node.position) != 3:
+            report.add("error", "invalid-node-position", f"GraphNode `{node.id}` position must contain 3 values", [node.id])
+        elif not all(
+            isinstance(value, (int, float))
+            and not isinstance(value, bool)
+            and math.isfinite(float(value))
+            for value in node.position
+        ):
+            report.add("error", "invalid-node-position", f"GraphNode `{node.id}` position values must be finite numbers", [node.id])
 
     node_map = graph.node_map
     for edge in graph.edges:
+        if not edge.id:
+            report.add("error", "missing-edge-id", "GraphEdge `id` must not be empty")
         if edge.id in edge_ids:
             report.add("error", "duplicate-edge-id", f"Duplicate edge id `{edge.id}`", [edge.id])
         edge_ids.add(edge.id)
@@ -66,77 +68,13 @@ def validate_graph(graph: RouteGraph) -> GraphValidationReport:
                 f"Edge `{edge.id}` references unknown node(s) `{edge.from_node}` -> `{edge.to_node}`",
                 [edge.id],
             )
-        if edge.weight <= 0:
-            report.add("error", "non-positive-weight", f"Edge `{edge.id}` must have positive weight", [edge.id])
-
-        pair_key = (edge.from_node, edge.to_node)
-        unordered_key = tuple(sorted(pair_key))
-        reverse_key = (edge.to_node, edge.from_node)
-        if pair_key in directed_pairs:
-            report.add(
-                "error",
-                "duplicate-edge",
-                f"Duplicate directed edge `{edge.from_node}` -> `{edge.to_node}`",
-                [directed_pairs[pair_key], edge.id],
-            )
-        elif edge.bidirectional and reverse_key in directed_pairs:
-            report.add(
-                "error",
-                "duplicate-edge",
-                f"Bidirectional edge `{edge.id}` conflicts with existing reverse one-way edge "
-                f"`{edge.to_node}` -> `{edge.from_node}`",
-                [directed_pairs[reverse_key], edge.id],
-            )
-        elif unordered_key in bidirectional_pairs:
-            report.add(
-                "error",
-                "duplicate-edge",
-                f"Edge `{edge.id}` conflicts with existing bidirectional node pair "
-                f"`{unordered_key[0]}` <-> `{unordered_key[1]}`",
-                [bidirectional_pairs[unordered_key], edge.id],
-            )
-        directed_pairs[pair_key] = edge.id
-        if edge.bidirectional:
-            bidirectional_pairs[unordered_key] = edge.id
-
-    connected_nodes: set[str] = set()
-    for edge in graph.edges:
-        connected_nodes.add(edge.from_node)
-        connected_nodes.add(edge.to_node)
-    for node in graph.nodes:
-        if node.id not in connected_nodes:
-            report.add("warning", "isolated-node", f"Node `{node.id}` is isolated", [node.id])
-
-    valid_edges = [edge for edge in graph.edges if edge.from_node in node_map and edge.to_node in node_map]
-    intersection_buckets: dict[str | None, list[tuple[Any, tuple[float, float], tuple[float, float]]]] = {}
-    for edge in valid_edges:
-        edge_kind = get_edge_kind(edge)
-        if edge_kind == EDGE_KIND_BRIDGE:
-            continue
-        group_color = get_edge_group_color(edge) if edge_kind == EDGE_KIND_GROUP else None
-        intersection_buckets.setdefault(group_color, []).append(
-            (
-                edge,
-                tuple(node_map[edge.from_node].position[:2]),
-                tuple(node_map[edge.to_node].position[:2]),
-            )
-        )
-
-    for bucket_edges in intersection_buckets.values():
-        for index, (edge_a, a1, a2) in enumerate(bucket_edges):
-            a_nodes = {edge_a.from_node, edge_a.to_node}
-            for edge_b, b1, b2 in bucket_edges[index + 1 :]:
-                b_nodes = {edge_b.from_node, edge_b.to_node}
-                if a_nodes & b_nodes:
-                    continue
-                if segments_intersect_2d(a1, a2, b1, b2):
-                    report.add(
-                        "error",
-                        "edge-intersection",
-                        f"Edges `{edge_a.id}` and `{edge_b.id}` intersect in XY plane",
-                        [edge_a.id, edge_b.id],
-                    )
-    _append_grouping_validation_issues(graph, report, severity="warning")
+        for metric_name, metric_value in edge.metrics.items():
+            if (
+                not isinstance(metric_value, (int, float))
+                or isinstance(metric_value, bool)
+                or not math.isfinite(float(metric_value))
+            ):
+                report.add("error", "invalid-edge-metric", f"Edge `{edge.id}` metric `{metric_name}` must be finite", [edge.id])
     return report
 
 

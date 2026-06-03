@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import copy
+
 from tests.route_graph_test_helpers import *
 from route_graph_webui.graph.io import load_json, save_graph
 from route_graph_webui.graph.model import RouteCandidateSet, RoutePlan
-from route_graph_webui.graph.versioning import CURRENT_EVALUATION_VERSION, CURRENT_GRAPH_SCHEMA_VERSION
+from route_graph_webui.graph.versioning import CURRENT_EVALUATION_VERSION, CURRENT_GRAPH_FORMAT_VERSION
 from route_graph_webui.storage import spelling_compat as _spelling_compat
 
 CANONICAL_GRAPH_CREATOR_PREFIX = _spelling_compat.CANONICAL_GRAPH_CREATOR_PREFIX
@@ -14,7 +16,7 @@ class GraphSchemaValidationTests(unittest.TestCase):
     def test_physical_edge_key_is_direction_agnostic(self) -> None:
         self.assertEqual(physical_edge_key("A", "B"), physical_edge_key("B", "A"))
 
-    def test_rejects_bidirectional_and_reverse_one_way_duplicate(self) -> None:
+    def test_base_validation_allows_bidirectional_and_reverse_one_way_duplicate(self) -> None:
         graph = RouteGraph(
             env_id="env",
             graph_name="graph",
@@ -31,8 +33,7 @@ class GraphSchemaValidationTests(unittest.TestCase):
 
         report = validate_graph(graph)
 
-        self.assertFalse(report.is_valid)
-        self.assertTrue(any(issue.code == "duplicate-edge" for issue in report.errors))
+        self.assertTrue(report.is_valid, report.format_text())
 
     def test_allows_opposite_one_way_edges(self) -> None:
         graph = RouteGraph(
@@ -69,7 +70,7 @@ class GraphSchemaValidationTests(unittest.TestCase):
 
         self.assertFalse(any(issue.code == "edge-intersection" for issue in report.errors), report.format_text())
 
-    def test_rejects_intersection_within_same_group_color(self) -> None:
+    def test_base_validation_allows_intersection_within_same_group_color(self) -> None:
         graph = build_crossing_two_edge_graph(
             edge_a_meta={
                 EDGE_KIND_META_KEY: EDGE_KIND_GROUP,
@@ -83,7 +84,7 @@ class GraphSchemaValidationTests(unittest.TestCase):
 
         report = validate_graph(graph)
 
-        self.assertTrue(any(issue.code == "edge-intersection" for issue in report.errors), report.format_text())
+        self.assertFalse(any(issue.code == "edge-intersection" for issue in report.errors), report.format_text())
 
     def test_allows_intersection_when_bridge_edge_is_involved(self) -> None:
         graph = build_crossing_two_edge_graph(
@@ -98,7 +99,7 @@ class GraphSchemaValidationTests(unittest.TestCase):
 
         self.assertFalse(any(issue.code == "edge-intersection" for issue in report.errors), report.format_text())
 
-    def test_rejects_negative_node_sample_radius_override(self) -> None:
+    def test_base_validation_allows_negative_node_sample_radius_override(self) -> None:
         graph = RouteGraph(
             env_id="env",
             graph_name="graph",
@@ -116,8 +117,7 @@ class GraphSchemaValidationTests(unittest.TestCase):
 
         report = validate_graph(graph)
 
-        self.assertFalse(report.is_valid)
-        self.assertTrue(any(issue.code == "invalid-node-sample-radius" for issue in report.errors))
+        self.assertTrue(report.is_valid, report.format_text())
 
     def test_graph_roundtrip_preserves_node_sample_radius_override(self) -> None:
         graph = RouteGraph(
@@ -141,26 +141,163 @@ class GraphSchemaValidationTests(unittest.TestCase):
 
         self.assertEqual(loaded.get_node("A").meta[NODE_SAMPLE_RADIUS_META_KEY], 12.5)
 
-    def test_legacy_graph_without_schema_version_loads_and_new_graph_writes_version(self) -> None:
+    def test_graph_roundtrip_writes_new_format_version(self) -> None:
         graph = build_test_square_graph()
-        legacy_payload = graph.to_dict()
-        legacy_payload.pop("schema_version", None)
-        legacy_creator = f"{LEGACY_GRAPH_CREATOR_PREFIX}graph_record"
-        canonical_creator = f"{CANONICAL_GRAPH_CREATOR_PREFIX}graph_record"
-        legacy_payload["meta"] = {"creator": legacy_creator}
 
         with tempfile.TemporaryDirectory() as temp_dir:
-            graph_path = write_json_file(Path(temp_dir) / "legacy_graph.json", legacy_payload)
+            graph_path = write_json_file(Path(temp_dir) / "graph.json", graph.to_dict())
             loaded = load_graph(graph_path)
             output_path = Path(temp_dir) / "new_graph.json"
             save_graph(output_path, loaded)
             saved_payload = load_json(output_path)
 
-        self.assertEqual(loaded.schema_version, CURRENT_GRAPH_SCHEMA_VERSION)
-        self.assertEqual(loaded.meta["creator"], canonical_creator)
-        self.assertEqual(loaded.meta[LEGACY_GRAPH_CREATOR_META_KEY], legacy_creator)
-        self.assertEqual(saved_payload["schema_version"], CURRENT_GRAPH_SCHEMA_VERSION)
-        self.assertEqual(saved_payload["meta"]["creator"], canonical_creator)
+        self.assertEqual(loaded.format_version, CURRENT_GRAPH_FORMAT_VERSION)
+        self.assertEqual(saved_payload["format"], "route-graph")
+        self.assertEqual(saved_payload["format_version"], CURRENT_GRAPH_FORMAT_VERSION)
+        self.assertNotIn("schema_version", saved_payload)
+        self.assertNotIn("graph_name", saved_payload)
+        self.assertNotIn("env_id", saved_payload)
+
+    def test_minimal_graph_roundtrip_preserves_id_extensions_and_missing_metrics(self) -> None:
+        payload = {
+            "format": "route-graph",
+            "format_version": 1,
+            "id": "graph-id",
+            "name": "Display Graph",
+            "coordinate_system": {
+                "type": "cartesian",
+                "axes": ["x", "y", "z"],
+                "unit": "cm",
+            },
+            "nodes": [
+                {"id": "A", "label": "Alpha", "position": [0.0, 0.0, 0.0]},
+                {"id": "B", "label": "Beta", "position": [3.0, 4.0, 9.0]},
+            ],
+            "edges": [
+                {
+                    "id": "E001",
+                    "source": "A",
+                    "target": "B",
+                    "directed": False,
+                    "enabled": True,
+                }
+            ],
+            "extensions": {
+                "custom_namespace": {
+                    "keep": True,
+                },
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            graph_path = write_json_file(Path(temp_dir) / "graph.json", payload)
+            loaded = load_graph(graph_path)
+            output_path = Path(temp_dir) / "saved.json"
+            save_graph(output_path, loaded)
+            saved_payload = load_json(output_path)
+            reloaded = load_graph(output_path)
+
+        edge = loaded.get_edge("E001")
+        self.assertEqual(loaded.graph_id, "graph-id")
+        self.assertEqual(loaded.graph_name, "Display Graph")
+        self.assertEqual(loaded.env_id, "")
+        self.assertAlmostEqual(edge.weight, 5.0)
+        self.assertFalse(edge.metrics_explicit)
+        self.assertFalse(edge.weight_explicit)
+        self.assertEqual(saved_payload["id"], "graph-id")
+        self.assertEqual(saved_payload["name"], "Display Graph")
+        self.assertNotIn("metrics", saved_payload["edges"][0])
+        self.assertNotIn("uav", saved_payload.get("extensions", {}))
+        self.assertEqual(saved_payload["extensions"]["custom_namespace"], {"keep": True})
+        self.assertAlmostEqual(reloaded.get_edge("E001").weight, 5.0)
+
+    def test_planning_uses_current_xy_fallback_for_edges_without_metrics(self) -> None:
+        payload = {
+            "format": "route-graph",
+            "format_version": 1,
+            "id": "graph-id",
+            "name": "Display Graph",
+            "coordinate_system": {},
+            "nodes": [
+                {"id": "A", "position": [0.0, 0.0, 0.0]},
+                {"id": "B", "position": [3.0, 4.0, 0.0]},
+            ],
+            "edges": [
+                {"id": "E001", "source": "A", "target": "B"},
+            ],
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            graph_path = write_json_file(Path(temp_dir) / "graph.json", payload)
+            graph = load_graph(graph_path)
+
+        self.assertAlmostEqual(graph.get_edge("E001").weight, 5.0)
+        GraphEditor(graph).update_node_xy("B", 6.0, 8.0)
+        candidate_set = generate_route_candidates(graph, "A", "B", max_routes=1)
+
+        self.assertAlmostEqual(graph.get_edge("E001").weight, 5.0)
+        self.assertAlmostEqual(candidate_set.candidates[0].total_length, 10.0)
+
+    def test_load_graph_rejects_missing_required_new_format_fields(self) -> None:
+        payload = {
+            "format": "route-graph",
+            "format_version": 1,
+            "id": "graph-id",
+            "name": "Display Graph",
+            "coordinate_system": {},
+            "nodes": [
+                {"id": "A", "position": [0.0, 0.0, 0.0]},
+                {"id": "B", "position": [1.0, 0.0, 0.0]},
+            ],
+            "edges": [
+                {"id": "E001", "source": "A", "target": "B"},
+            ],
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            for field_name in ("format", "format_version", "nodes", "edges"):
+                candidate = copy.deepcopy(payload)
+                candidate.pop(field_name)
+                graph_path = write_json_file(Path(temp_dir) / f"missing_{field_name}.json", candidate)
+                with self.assertRaises(GraphSchemaError):
+                    load_graph(graph_path)
+
+    def test_load_graph_rejects_minimal_structural_errors(self) -> None:
+        base_payload = {
+            "format": "route-graph",
+            "format_version": 1,
+            "id": "graph-id",
+            "name": "Display Graph",
+            "coordinate_system": {},
+            "nodes": [
+                {"id": "A", "position": [0.0, 0.0, 0.0]},
+                {"id": "B", "position": [1.0, 0.0, 0.0]},
+            ],
+            "edges": [
+                {"id": "E001", "source": "A", "target": "B"},
+            ],
+        }
+        cases = {
+            "duplicate_node": lambda payload: payload["nodes"].append(
+                {"id": "A", "position": [2.0, 0.0, 0.0]}
+            ),
+            "duplicate_edge": lambda payload: payload["edges"].append(
+                {"id": "E001", "source": "B", "target": "A"}
+            ),
+            "dangling_edge": lambda payload: payload["edges"][0].update({"target": "MISSING"}),
+            "self_loop": lambda payload: payload["edges"][0].update({"target": "A"}),
+            "invalid_position": lambda payload: payload["nodes"][0].update(
+                {"position": [0.0, True, 0.0]}
+            ),
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            for case_name, mutate in cases.items():
+                payload = copy.deepcopy(base_payload)
+                mutate(payload)
+                graph_path = write_json_file(Path(temp_dir) / f"{case_name}.json", payload)
+                with self.assertRaises(GraphSchemaError):
+                    load_graph(graph_path)
 
     def test_plan_and_candidate_set_roundtrip_evaluation_version(self) -> None:
         graph = build_test_square_graph()
@@ -178,25 +315,15 @@ class GraphSchemaValidationTests(unittest.TestCase):
         self.assertEqual(loaded_plan.evaluation_version, CURRENT_EVALUATION_VERSION)
         self.assertEqual(loaded_plan.to_dict()["evaluation_version"], CURRENT_EVALUATION_VERSION)
 
-    def test_graph_edge_bool_fields_accept_bool_string_and_integer_values(self) -> None:
-        edge_from_string = GraphEdge.from_mapping(
+    def test_graph_edge_bool_fields_require_json_booleans_but_candidate_selected_is_lenient(self) -> None:
+        edge = GraphEdge.from_mapping(
             {
                 "id": "E001",
-                "from": "A",
-                "to": "B",
-                "weight": 1.0,
-                "enabled": "false",
-                "bidirectional": "true",
-            }
-        )
-        edge_from_int = GraphEdge.from_mapping(
-            {
-                "id": "E002",
-                "from": "A",
-                "to": "B",
-                "weight": 1.0,
-                "enabled": 1,
-                "bidirectional": 0,
+                "source": "A",
+                "target": "B",
+                "metrics": {"cost": 1.0},
+                "enabled": False,
+                "directed": True,
             }
         )
         candidate = RouteCandidate.from_mapping(
@@ -210,10 +337,8 @@ class GraphSchemaValidationTests(unittest.TestCase):
             }
         )
 
-        self.assertFalse(edge_from_string.enabled)
-        self.assertTrue(edge_from_string.bidirectional)
-        self.assertTrue(edge_from_int.enabled)
-        self.assertFalse(edge_from_int.bidirectional)
+        self.assertFalse(edge.enabled)
+        self.assertFalse(edge.bidirectional)
         self.assertFalse(candidate.selected)
 
     def test_graph_edge_bool_fields_reject_invalid_values(self) -> None:
@@ -221,20 +346,20 @@ class GraphSchemaValidationTests(unittest.TestCase):
             GraphEdge.from_mapping(
                 {
                     "id": "E001",
-                    "from": "A",
-                    "to": "B",
-                    "weight": 1.0,
-                    "enabled": "off",
+                    "source": "A",
+                    "target": "B",
+                    "metrics": {"cost": 1.0},
+                    "enabled": "false",
                 }
             )
         with self.assertRaises(GraphSchemaError):
             GraphEdge.from_mapping(
                 {
                     "id": "E002",
-                    "from": "A",
-                    "to": "B",
-                    "weight": 1.0,
-                    "bidirectional": 2,
+                    "source": "A",
+                    "target": "B",
+                    "metrics": {"cost": 1.0},
+                    "directed": 1,
                 }
             )
         with self.assertRaises(GraphSchemaError):

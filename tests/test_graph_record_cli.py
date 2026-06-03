@@ -170,9 +170,9 @@ class CliBehaviorTests(unittest.TestCase):
                     "--graph",
                     str(graph_path),
                     "--from-node",
-                    "N002",
+                    "N001",
                     "--to-node",
-                    "N004",
+                    "N001",
                     "--output",
                     str(output_path),
                 ],
@@ -183,7 +183,7 @@ class CliBehaviorTests(unittest.TestCase):
 
         combined = f"{result.stdout}\n{result.stderr}"
         self.assertEqual(result.returncode, 1, combined)
-        self.assertIn("edge-intersection", combined)
+        self.assertIn("self-loop", combined)
         self.assertNotIn("Traceback", combined)
         self.assertNotIn("Added edge", combined)
 

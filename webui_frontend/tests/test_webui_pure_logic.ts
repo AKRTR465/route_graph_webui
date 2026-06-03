@@ -169,26 +169,31 @@ test('preview path and graph view helpers are deterministic', () => {
 
 function createMinimal3DGraph(): RouteGraph {
   return {
-    schema_version: 1,
-    env_id: 'env',
-    graph_name: 'z_graph',
-    default_altitude: null,
+    format: 'route-graph',
+    format_version: 1,
+    id: 'z_graph',
+    name: 'z_graph',
+    coordinate_system: { type: 'cartesian', axes: ['x', 'y', 'z'], unit: 'cm' },
+    properties: {},
     nodes: [
-      { id: 'A', name: 'A', position: [0, 0, 100], yaw_hint: null, tags: [], meta: {} },
-      { id: 'B', name: 'B', position: [1000, 0, 300], yaw_hint: null, tags: [], meta: {} },
+      { id: 'A', label: 'A', position: [0, 0, 100], tags: [], properties: {}, extensions: {} },
+      { id: 'B', label: 'B', position: [1000, 0, 300], tags: [], properties: {}, extensions: {} },
     ],
     edges: [
       {
         id: 'E001',
-        from: 'A',
-        to: 'B',
-        weight: 1000,
+        source: 'A',
+        target: 'B',
+        metrics: { length: 1000, cost: 1000 },
         enabled: true,
-        bidirectional: true,
-        meta: { [EDGE_KIND_META_KEY]: EDGE_KIND_GROUP, [EDGE_GROUP_COLOR_META_KEY]: '#FF0000' },
+        directed: false,
+        properties: {},
+        extensions: {
+          route_graph_webui: { [EDGE_KIND_META_KEY]: EDGE_KIND_GROUP, [EDGE_GROUP_COLOR_META_KEY]: '#FF0000' },
+        },
       },
     ],
-    meta: {},
+    extensions: {},
   }
 }
 
@@ -220,8 +225,8 @@ function createMinimalCandidateSet(): RouteCandidateSet {
       },
     ],
     node_lookup: {
-      A: { id: 'A', name: 'A', position: [0, 0, 200], yaw_hint: null, tags: [], meta: {} },
-      B: { id: 'B', name: 'B', position: [1000, 0, 200], yaw_hint: null, tags: [], meta: {} },
+      A: { id: 'A', label: 'A', position: [0, 0, 200], tags: [], properties: {}, extensions: {} },
+      B: { id: 'B', label: 'B', position: [1000, 0, 200], tags: [], properties: {}, extensions: {} },
     },
     selected_candidate_ids: ['C001'],
     meta: {
@@ -261,37 +266,45 @@ test('3d group normalized layer falls back to graph-derived group averages witho
 
 test('3d group normalized layer preserves conflicting and ungrouped node z', () => {
   const graph: RouteGraph = {
-    schema_version: 1,
-    env_id: 'env',
-    graph_name: 'group_conflict_graph',
-    default_altitude: null,
+    format: 'route-graph',
+    format_version: 1,
+    id: 'group_conflict_graph',
+    name: 'group_conflict_graph',
+    coordinate_system: { type: 'cartesian', axes: ['x', 'y', 'z'], unit: 'cm' },
+    properties: {},
     nodes: [
-      { id: 'A', name: 'A', position: [0, 0, 100], yaw_hint: null, tags: [], meta: {} },
-      { id: 'B', name: 'B', position: [100, 0, 300], yaw_hint: null, tags: [], meta: {} },
-      { id: 'C', name: 'C', position: [200, 0, 500], yaw_hint: null, tags: [], meta: {} },
-      { id: 'D', name: 'D', position: [300, 0, 700], yaw_hint: null, tags: [], meta: {} },
+      { id: 'A', label: 'A', position: [0, 0, 100], tags: [], properties: {}, extensions: {} },
+      { id: 'B', label: 'B', position: [100, 0, 300], tags: [], properties: {}, extensions: {} },
+      { id: 'C', label: 'C', position: [200, 0, 500], tags: [], properties: {}, extensions: {} },
+      { id: 'D', label: 'D', position: [300, 0, 700], tags: [], properties: {}, extensions: {} },
     ],
     edges: [
       {
         id: 'E_RED',
-        from: 'A',
-        to: 'B',
-        weight: 100,
+        source: 'A',
+        target: 'B',
+        metrics: { length: 100, cost: 100 },
         enabled: true,
-        bidirectional: true,
-        meta: { [EDGE_KIND_META_KEY]: EDGE_KIND_GROUP, [EDGE_GROUP_COLOR_META_KEY]: '#FF0000' },
+        directed: false,
+        properties: {},
+        extensions: {
+          route_graph_webui: { [EDGE_KIND_META_KEY]: EDGE_KIND_GROUP, [EDGE_GROUP_COLOR_META_KEY]: '#FF0000' },
+        },
       },
       {
         id: 'E_BLUE',
-        from: 'B',
-        to: 'C',
-        weight: 100,
+        source: 'B',
+        target: 'C',
+        metrics: { length: 100, cost: 100 },
         enabled: true,
-        bidirectional: true,
-        meta: { [EDGE_KIND_META_KEY]: EDGE_KIND_GROUP, [EDGE_GROUP_COLOR_META_KEY]: '#0000FF' },
+        directed: false,
+        properties: {},
+        extensions: {
+          route_graph_webui: { [EDGE_KIND_META_KEY]: EDGE_KIND_GROUP, [EDGE_GROUP_COLOR_META_KEY]: '#0000FF' },
+        },
       },
     ],
-    meta: {},
+    extensions: {},
   }
 
   const groupNormalizedPositions = resolveGraph3DNodePositions(graph, null, 'groupNormalized')

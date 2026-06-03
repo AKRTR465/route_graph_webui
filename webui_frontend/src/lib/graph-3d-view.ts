@@ -7,6 +7,7 @@ const DEFAULT_GROUP_COLOR = '#334155'
 const EDGE_GROUP_COLOR_META_KEY = 'group_color'
 const EDGE_KIND_BRIDGE = 'bridge'
 const EDGE_KIND_META_KEY = 'edge_kind'
+const WEBUI_EXTENSION_NAMESPACE = 'route_graph_webui'
 
 export type CanvasViewStateLike = {
   rotationQuadrants: number
@@ -51,15 +52,25 @@ function normalizeHexColor(value: unknown): string | null {
   return (text.startsWith('#') ? text : `#${text}`).toUpperCase()
 }
 
+function objectRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+}
+
+function edgeWebuiExtension(edge: GraphEdge): Record<string, unknown> {
+  return objectRecord(objectRecord(edge.extensions)[WEBUI_EXTENSION_NAMESPACE])
+}
+
 function edgeKind(edge: GraphEdge) {
-  return edge.meta?.[EDGE_KIND_META_KEY] === EDGE_KIND_BRIDGE ? EDGE_KIND_BRIDGE : 'group'
+  return edgeWebuiExtension(edge)[EDGE_KIND_META_KEY] === EDGE_KIND_BRIDGE ? EDGE_KIND_BRIDGE : 'group'
 }
 
 function edgeGroupColor(edge: GraphEdge) {
   if (edgeKind(edge) === EDGE_KIND_BRIDGE) {
     return null
   }
-  return normalizeHexColor(edge.meta?.[EDGE_GROUP_COLOR_META_KEY]) ?? DEFAULT_GROUP_COLOR
+  return normalizeHexColor(edgeWebuiExtension(edge)[EDGE_GROUP_COLOR_META_KEY]) ?? DEFAULT_GROUP_COLOR
 }
 
 function readCandidateNodeGroupLookup(candidateSet: RouteCandidateSet | null) {
@@ -132,8 +143,8 @@ function deriveGraphGrouping(graph: RouteGraph | null): Graph3DGrouping {
     if (!color) {
       continue
     }
-    nodeGroupCandidates.get(edge.from)?.add(color)
-    nodeGroupCandidates.get(edge.to)?.add(color)
+    nodeGroupCandidates.get(edge.source)?.add(color)
+    nodeGroupCandidates.get(edge.target)?.add(color)
   }
 
   for (const node of graph?.nodes ?? []) {

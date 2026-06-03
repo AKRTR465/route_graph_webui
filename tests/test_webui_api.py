@@ -6,6 +6,14 @@ from route_graph_webui.graph.edge_intent import resolve_edge_creation_meta
 
 resolve_graph_gui_edge_creation_meta = graph_gui_module.resolve_graph_gui_edge_creation_meta
 
+
+def graph_webui_extension(payload: dict[str, Any]) -> dict[str, Any]:
+    return payload.get("extensions", {}).get("route_graph_webui", {})
+
+
+def edge_webui_extension(payload: dict[str, Any]) -> dict[str, Any]:
+    return payload.get("extensions", {}).get("route_graph_webui", {})
+
 class WebUiServerFrontendStaticTests(unittest.TestCase):
     def test_default_cors_is_local_only_unless_explicitly_opened(self) -> None:
         self.assertEqual(
@@ -107,7 +115,7 @@ class WebUiServerCanvasViewApiTests(unittest.TestCase):
             self.assertEqual(response.status_code, 200, response.text)
             payload = response.json()
             self.assertEqual(
-                payload["graph"]["meta"][GRAPH_GUI_CANVAS_VIEW_META_KEY],
+                graph_webui_extension(payload["graph"])[GRAPH_GUI_CANVAS_VIEW_META_KEY],
                 {
                     "rotation_quadrants": 1,
                     "flip_horizontal": True,
@@ -117,7 +125,7 @@ class WebUiServerCanvasViewApiTests(unittest.TestCase):
 
             saved = json.loads(graph_path.read_text(encoding="utf-8"))
             self.assertEqual(
-                saved["meta"][GRAPH_GUI_CANVAS_VIEW_META_KEY],
+                graph_webui_extension(saved)[GRAPH_GUI_CANVAS_VIEW_META_KEY],
                 {
                     "rotation_quadrants": 1,
                     "flip_horizontal": True,
@@ -160,10 +168,10 @@ class WebUiServerCanvasViewApiTests(unittest.TestCase):
 
             self.assertEqual(response.status_code, 200, response.text)
             payload = response.json()
-            self.assertNotIn(GRAPH_GUI_CANVAS_VIEW_META_KEY, payload["graph"]["meta"])
+            self.assertNotIn(GRAPH_GUI_CANVAS_VIEW_META_KEY, graph_webui_extension(payload["graph"]))
 
             saved = json.loads(graph_path.read_text(encoding="utf-8"))
-            self.assertNotIn(GRAPH_GUI_CANVAS_VIEW_META_KEY, saved["meta"])
+            self.assertNotIn(GRAPH_GUI_CANVAS_VIEW_META_KEY, graph_webui_extension(saved))
 
 
 
@@ -294,16 +302,17 @@ class WebUiServerUiStateApiTests(unittest.TestCase):
             self.assertEqual(fetched_ui_state["export_inputs"]["step_distance"], "55")
 
             saved = json.loads(graph_path.read_text(encoding="utf-8"))
-            self.assertEqual(saved["meta"][GRAPH_GUI_AUTO_PLAN_INPUTS_META_KEY]["planning_mode"], "auto")
-            self.assertEqual(saved["meta"][GRAPH_GUI_AUTO_PLAN_INPUTS_META_KEY]["auto_max_output_routes"], "8")
-            self.assertTrue(saved["meta"][GRAPH_GUI_AUTO_PLAN_INPUTS_META_KEY]["auto_enable_global_coverage"])
-            self.assertEqual(saved["meta"][GRAPH_GUI_WEBUI_INPUTS_META_KEY]["min_frame_count"], "24")
-            self.assertEqual(saved["meta"][GRAPH_GUI_WEBUI_INPUTS_META_KEY]["max_frame_count"], "240")
-            self.assertEqual(saved["meta"][GRAPH_GUI_EXPORT_INPUTS_META_KEY]["node_sample_radius"], "15")
-            self.assertEqual(saved["meta"][GRAPH_GUI_EXPORT_INPUTS_META_KEY]["corner_radius"], "900")
-            self.assertEqual(saved["meta"][GRAPH_GUI_WEBUI_INPUTS_META_KEY]["active_group_color"], "#00FF00")
+            saved_webui = graph_webui_extension(saved)
+            self.assertEqual(saved_webui[GRAPH_GUI_AUTO_PLAN_INPUTS_META_KEY]["planning_mode"], "auto")
+            self.assertEqual(saved_webui[GRAPH_GUI_AUTO_PLAN_INPUTS_META_KEY]["auto_max_output_routes"], "8")
+            self.assertTrue(saved_webui[GRAPH_GUI_AUTO_PLAN_INPUTS_META_KEY]["auto_enable_global_coverage"])
+            self.assertEqual(saved_webui[GRAPH_GUI_WEBUI_INPUTS_META_KEY]["min_frame_count"], "24")
+            self.assertEqual(saved_webui[GRAPH_GUI_WEBUI_INPUTS_META_KEY]["max_frame_count"], "240")
+            self.assertEqual(saved_webui[GRAPH_GUI_EXPORT_INPUTS_META_KEY]["node_sample_radius"], "15")
+            self.assertEqual(saved_webui[GRAPH_GUI_EXPORT_INPUTS_META_KEY]["corner_radius"], "900")
+            self.assertEqual(saved_webui[GRAPH_GUI_WEBUI_INPUTS_META_KEY]["active_group_color"], "#00FF00")
             self.assertEqual(
-                saved["meta"][GRAPH_GUI_WEBUI_INPUTS_META_KEY]["candidate_set_file_name"],
+                saved_webui[GRAPH_GUI_WEBUI_INPUTS_META_KEY]["candidate_set_file_name"],
                 "stateful.candidates.json",
             )
 
@@ -342,9 +351,10 @@ class WebUiServerUiStateApiTests(unittest.TestCase):
             )
 
             saved = json.loads(graph_path.read_text(encoding="utf-8"))
-            self.assertEqual(saved["meta"][GRAPH_BRIDGE_STYLE_META_KEY]["color"], "#123456")
+            saved_webui = graph_webui_extension(saved)
+            self.assertEqual(saved_webui[GRAPH_BRIDGE_STYLE_META_KEY]["color"], "#123456")
             self.assertEqual(
-                saved["meta"][GRAPH_GROUP_CONFIGS_META_KEY]["#FF0000"]["node_sample_radius"],
+                saved_webui[GRAPH_GROUP_CONFIGS_META_KEY]["#FF0000"]["node_sample_radius"],
                 "15",
             )
 
@@ -612,8 +622,9 @@ class WebUiServerEdgeApiTests(unittest.TestCase):
 
             self.assertEqual(response.status_code, 200, response.text)
             created_edge = response.json()["graph"]["edges"][-1]
-            self.assertEqual(created_edge["meta"]["edge_kind"], EDGE_KIND_BRIDGE)
-            self.assertNotIn(EDGE_GROUP_COLOR_META_KEY, created_edge["meta"])
+            created_edge_webui = edge_webui_extension(created_edge)
+            self.assertEqual(created_edge_webui["edge_kind"], EDGE_KIND_BRIDGE)
+            self.assertNotIn(EDGE_GROUP_COLOR_META_KEY, created_edge_webui)
 
     def test_edge_intent_matches_shared_service_gui_and_api(self) -> None:
         expected_meta = resolve_edge_creation_meta(
@@ -654,7 +665,7 @@ class WebUiServerEdgeApiTests(unittest.TestCase):
                 )
 
         self.assertEqual(response.status_code, 200, response.text)
-        api_meta = response.json()["graph"]["edges"][-1]["meta"]
+        api_meta = edge_webui_extension(response.json()["graph"]["edges"][-1])
         self.assertEqual(gui_graph.edges[-1].meta, expected_meta)
         self.assertEqual(api_meta, expected_meta)
 
@@ -683,7 +694,7 @@ class WebUiServerEdgeApiTests(unittest.TestCase):
 
             self.assertEqual(response.status_code, 200, response.text)
             remaining_pairs = {
-                frozenset((edge["from"], edge["to"]))
+                frozenset((edge["source"], edge["target"]))
                 for edge in response.json()["graph"]["edges"]
             }
             self.assertNotIn(frozenset(("N001", "N004")), remaining_pairs)

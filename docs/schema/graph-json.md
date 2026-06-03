@@ -1,51 +1,88 @@
-# Graph JSON Schema
+# Graph JSON Format
 
-Graph files live under the active data directory's `graphs` folder. Repository examples live under `data/examples/graphs`; on first startup, an empty runtime `graphs` folder is initialized from those examples. New writes include `schema_version`; old files without a version are migrated on read.
+Graph files use the `route-graph` format. The backend only reads this format; legacy
+`schema_version` graph files are not supported at runtime.
+
+Graph files live under the active data directory's `graphs` folder. Repository examples
+live under `data/examples/graphs`.
 
 ## Top Level
 
-- `schema_version`: integer schema version. Current version is `1`.
-- `env_id`: environment id used by runtime and export tools.
-- `graph_name`: display and export name.
-- `default_altitude`: optional default route altitude.
+Required fields:
+
+- `format`: must be `route-graph`.
+- `format_version`: must be `1`.
+- `id`: stable graph id.
+- `name`: display and export name.
+- `coordinate_system`: object describing coordinates. Current bundled graphs use
+  `{ "type": "cartesian", "axes": ["x", "y", "z"], "unit": "cm" }`.
 - `nodes`: list of graph nodes.
 - `edges`: list of graph edges.
-- `meta`: graph-level metadata for UI state, grouping, bridge style, and compatibility.
+
+Optional fields:
+
+- `properties`: project-neutral graph attributes.
+- `extensions`: namespaced project-specific data.
 
 ## Nodes
 
 Each node contains:
 
 - `id`: stable node id.
-- `name`: display name.
+- `label`: display name.
 - `position`: `[x, y, z]`.
-- `yaw_hint`: optional yaw hint in degrees.
 - `tags`: string tags.
-- `meta`: node metadata, including optional sample radius overrides.
+- `properties`: project-neutral node attributes.
+- `extensions`: namespaced node-specific data.
+
+UAV data is stored under `extensions.uav`, for example:
+
+- `yaw_hint_deg`
+- `sample_radius`
 
 ## Edges
 
 Each edge contains:
 
 - `id`: stable edge id.
-- `from` / `to`: endpoint node ids.
-- `weight`: edge length or route cost.
+- `source` / `target`: endpoint node ids.
+- `directed`: whether the edge is one-way. `false` means bidirectional.
 - `enabled`: whether planners may use the edge.
-- `bidirectional`: whether the reverse direction is also allowed.
-- `meta`: edge kind, group color, bridge metadata, and other UI metadata.
+- `metrics`: optional numeric values such as `length` and `cost`.
+- `properties`: project-neutral edge attributes.
+- `extensions`: namespaced edge-specific data.
 
-## Metadata Compatibility
+When `metrics` is omitted, route planning resolves edge cost at runtime from endpoint XY
+distance. Missing metrics is not a graph format error.
 
-Graph meta constants are sourced from `route_graph_webui.graph.meta` and synchronized to `webui_frontend/src/types/graph-meta.ts`.
+## Extensions
 
-Legacy `graph_gui_*` meta keys remain compatible for now. Legacy creator values beginning with `route_garph.` are accepted on read and normalized to `route_graph.` on new writes, preserving the original value in `legacy_creator`.
+Project-specific fields must live under a namespace in `extensions`.
+
+- `extensions.uav.env_id`: runtime environment id when needed.
+- `extensions.uav.default_altitude`: default route altitude when needed.
+- `extensions.route_graph_webui`: WebUI grouping, bridge style, and saved UI state.
+
+Unknown extension namespaces are preserved when loading and saving.
 
 ## Validation
 
-Use:
+Base graph validation is intentionally structural:
 
-```powershell
-python -m route_graph_webui.cli.graph_editor validate --graph data/examples/graphs/DowntownWest.json
-```
+- JSON root must be an object.
+- `format` must be `route-graph`.
+- `format_version` must be `1`.
+- `id` and `name` must be non-empty strings.
+- `coordinate_system` must be an object.
+- `nodes` and `edges` must be arrays.
+- Node ids must be non-empty and unique.
+- Node positions must contain exactly three finite numbers.
+- Edge ids must be non-empty and unique.
+- Edge `source` and `target` must reference existing nodes.
+- Self-loop edges are invalid.
+- `directed` and `enabled`, when present, must be booleans.
+- `properties` and `extensions`, when present, must be objects.
+- `metrics`, when present, must be an object with finite numeric values.
 
-Validation checks duplicate edges, missing nodes, graph grouping constraints, same-color intersections, bridge exceptions, and schema field shapes.
+Color groups, bridge semantics, edge intersections, isolated nodes, and UAV-specific
+export rules are domain checks, not base graph format checks.

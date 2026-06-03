@@ -571,31 +571,38 @@ class GraphGuiIoHelperTests(unittest.TestCase):
 
     def test_load_validated_graph_rejects_invalid_graph_file(self) -> None:
         bad_graph = {
-            "env_id": "env",
-            "graph_name": "bad_graph",
-            "default_altitude": None,
+            "format": "route-graph",
+            "format_version": 1,
+            "id": "bad_graph",
+            "name": "bad_graph",
+            "coordinate_system": {
+                "type": "cartesian",
+                "axes": ["x", "y", "z"],
+                "unit": "cm",
+            },
             "nodes": [
                 {
                     "id": "A",
-                    "name": "A",
+                    "label": "A",
                     "position": [0.0, 0.0, 0.0],
-                    "yaw_hint": 0.0,
                     "tags": [],
-                    "meta": {},
+                    "properties": {},
+                    "extensions": {"uav": {"yaw_hint_deg": 0.0}},
                 }
             ],
             "edges": [
                 {
                     "id": "E001",
-                    "from": "A",
-                    "to": "MISSING",
-                    "weight": 1.0,
+                    "source": "A",
+                    "target": "MISSING",
+                    "metrics": {"length": 1.0, "cost": 1.0},
                     "enabled": True,
-                    "bidirectional": True,
-                    "meta": {},
+                    "directed": False,
+                    "properties": {},
+                    "extensions": {},
                 }
             ],
-            "meta": {},
+            "extensions": {},
         }
 
         with tempfile.TemporaryDirectory() as temp_dir:

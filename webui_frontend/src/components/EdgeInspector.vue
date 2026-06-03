@@ -41,15 +41,15 @@ const emit = defineEmits<{
       <dl class="detail-grid">
         <div><dt>边 ID</dt><dd>{{ selectedEdge.id }}</dd></div>
         <div><dt>长度</dt><dd>{{ selectedEdgeLengthText }}</dd></div>
-        <div><dt>起点</dt><dd>{{ selectedEdge.from }}</dd></div>
-        <div><dt>终点</dt><dd>{{ selectedEdge.to }}</dd></div>
+        <div><dt>起点</dt><dd>{{ selectedEdge.source }}</dd></div>
+        <div><dt>终点</dt><dd>{{ selectedEdge.target }}</dd></div>
         <div><dt>类型</dt><dd>{{ selectedEdgeKindLabel }}</dd></div>
         <div><dt>颜色</dt><dd>{{ selectedEdgeColorText }}</dd></div>
       </dl>
 
       <div class="anchor-strip">
         <button class="chip-button" :disabled="mutatingEdge" @click="emit('patch-edge', { enabled: !selectedEdge.enabled })">{{ selectedEdge.enabled ? '禁用边' : '启用边' }}</button>
-        <button class="chip-button" :disabled="mutatingEdge" @click="emit('patch-edge', { bidirectional: !selectedEdge.bidirectional })">{{ selectedEdge.bidirectional ? '切换为单向' : '切换为双向' }}</button>
+        <button class="chip-button" :disabled="mutatingEdge" @click="emit('patch-edge', { bidirectional: selectedEdge.directed })">{{ selectedEdge.directed ? '切换为双向' : '切换为单向' }}</button>
         <button class="chip-button chip-button--danger" :disabled="mutatingEdge" @click="emit('delete-selected-edge')">删除边</button>
       </div>
     </template>

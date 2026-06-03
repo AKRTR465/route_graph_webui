@@ -5,44 +5,46 @@ export type Position3 = [number, number, number]
 
 export interface GraphNode {
   id: string
-  name: string
+  label: string
   position: Position3
-  yaw_hint: number | null
   tags: string[]
-  meta: Record<string, unknown>
+  properties?: Record<string, unknown>
+  extensions?: Record<string, unknown>
 }
 
 export interface GraphEdge {
   id: string
-  from: string
-  to: string
-  weight: number
+  source: string
+  target: string
+  directed: boolean
   enabled: boolean
-  bidirectional: boolean
-  meta: Record<string, unknown>
+  metrics?: Record<string, number>
+  properties?: Record<string, unknown>
+  extensions?: Record<string, unknown>
 }
 
 export interface RouteGraph {
-  schema_version: number
-  env_id: string
-  graph_name: string
-  default_altitude: number | null
+  format: string
+  format_version: number
+  id: string
+  name: string
+  coordinate_system: Record<string, unknown>
+  properties?: Record<string, unknown>
   nodes: GraphNode[]
   edges: GraphEdge[]
-  meta: Record<string, unknown>
+  extensions?: Record<string, unknown>
 }
 
 export interface GraphSummary {
   path: string
   file_name: string
-  graph_name: string
-  env_id: string
+  id: string
+  name: string
   node_count: number
   edge_count: number
   enabled_edge_count: number
   group_colors: string[]
   bridge_count: number
-  is_legacy: boolean
   updated_at: string
   load_error?: string
 }

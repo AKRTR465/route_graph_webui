@@ -105,14 +105,14 @@ const emit = defineEmits<{
           <span>起点</span>
           <select :value="planForm.startNodeId" @change="emit('manual-start-node-change', $event)">
             <option value="">未设置</option>
-            <option v-for="node in graph?.nodes ?? []" :key="node.id" :value="node.id">{{ node.id }} · {{ node.name }}</option>
+            <option v-for="node in graph?.nodes ?? []" :key="node.id" :value="node.id">{{ node.id }} · {{ node.label || node.id }}</option>
           </select>
         </label>
         <label class="field-group">
           <span>终点</span>
           <select :value="planForm.endNodeId" @change="emit('manual-end-node-change', $event)">
             <option value="">未设置</option>
-            <option v-for="node in graph?.nodes ?? []" :key="node.id" :value="node.id">{{ node.id }} · {{ node.name }}</option>
+            <option v-for="node in graph?.nodes ?? []" :key="node.id" :value="node.id">{{ node.id }} · {{ node.label || node.id }}</option>
           </select>
         </label>
       </div>

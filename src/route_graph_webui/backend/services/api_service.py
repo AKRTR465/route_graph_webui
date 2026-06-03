@@ -55,7 +55,7 @@ from route_graph_webui.graph.grouping import (
     write_graph_bridge_style,
     write_graph_group_configs,
 )
-from route_graph_webui.graph.io import save_candidate_set, save_graph
+from route_graph_webui.graph.io import load_graph, save_candidate_set, save_graph
 from route_graph_webui.graph.meta import (
     DEFAULT_GROUP_COLOR,
     EDGE_KIND_BRIDGE,
@@ -97,7 +97,6 @@ from route_graph_webui.storage.graph_store import (
 )
 from route_graph_webui.storage.json_store import (
     consume_jsonl_text,
-    read_json,
     read_json_mapping_if_ready,
     write_json_atomic,
 )
@@ -267,8 +266,7 @@ def _resolve_saved_default_graph_path() -> Path | None:
     if not candidate.exists() or not candidate.is_file():
         return None
     try:
-        mapping, _ = _load_graph_mapping(candidate)
-        RouteGraph.from_mapping(mapping)
+        load_graph(candidate)
     except Exception:
         return None
     return candidate
@@ -410,70 +408,17 @@ def _default_graph_path() -> Path:
     return graph_paths[0]
 
 
-def _coerce_legacy_graph_mapping(raw: dict[str, Any]) -> dict[str, Any]:
-    normalized = dict(raw)
-
-    if "graph_name" not in normalized and "id" in normalized:
-        normalized["graph_name"] = str(normalized["id"])
-    if "default_altitude" not in normalized:
-        normalized["default_altitude"] = None
-    if "meta" not in normalized or not isinstance(normalized.get("meta"), dict):
-        normalized["meta"] = dict(normalized.get("meta") or {})
-
-    normalized_nodes: list[dict[str, Any]] = []
-    for raw_node in normalized.get("nodes", []):
-        node = dict(raw_node)
-        if "name" not in node:
-            node["name"] = str(node.get("id", ""))
-        if "yaw_hint" not in node:
-            node["yaw_hint"] = None
-        if "tags" not in node or node.get("tags") is None:
-            node["tags"] = []
-        if "meta" not in node or not isinstance(node.get("meta"), dict):
-            node["meta"] = dict(node.get("meta") or {})
-        normalized_nodes.append(node)
-    normalized["nodes"] = normalized_nodes
-
-    normalized_edges: list[dict[str, Any]] = []
-    for raw_edge in normalized.get("edges", []):
-        edge = dict(raw_edge)
-        if "bidirectional" not in edge:
-            edge["bidirectional"] = True
-        if "meta" not in edge or not isinstance(edge.get("meta"), dict):
-            edge["meta"] = dict(edge.get("meta") or {})
-        normalized_edges.append(edge)
-    normalized["edges"] = normalized_edges
-
-    return normalized
-
-
-def _load_graph_mapping(graph_path: Path) -> tuple[dict[str, Any], bool]:
-    try:
-        raw = read_json(graph_path)
-    except FileNotFoundError as exc:
-        raise GraphSchemaError(f"Graph not found: {graph_path}") from exc
-    except ValueError as exc:
-        raise GraphSchemaError(f"Graph JSON is invalid: {graph_path}") from exc
-
-    if not isinstance(raw, dict):
-        raise GraphSchemaError("Graph JSON root must be an object")
-
-    legacy = "graph_name" not in raw and "id" in raw
-    return (_coerce_legacy_graph_mapping(raw) if legacy else raw), legacy
-
-
-def _load_graph(graph_ref: str | None) -> tuple[Path, RouteGraph, bool]:
+def _load_graph(graph_ref: str | None) -> tuple[Path, RouteGraph]:
     graph_path = _resolve_within_root(
         GRAPH_ROOT,
         graph_ref,
         default=_default_graph_path(),
         expect_json=True,
     )
-    mapping, is_legacy = _load_graph_mapping(graph_path)
-    return graph_path, RouteGraph.from_mapping(mapping), is_legacy
+    return graph_path, load_graph(graph_path)
 
 
-def _serialize_graph_summary(graph_path: Path, graph: RouteGraph, is_legacy: bool) -> dict[str, Any]:
+def _serialize_graph_summary(graph_path: Path, graph: RouteGraph) -> dict[str, Any]:
     group_colors = sorted(
         {
             get_edge_group_color(edge, default_color=DEFAULT_GROUP_COLOR) or DEFAULT_GROUP_COLOR
@@ -487,23 +432,22 @@ def _serialize_graph_summary(graph_path: Path, graph: RouteGraph, is_legacy: boo
     return {
         "path": _graph_relative_path(graph_path),
         "file_name": graph_path.name,
-        "graph_name": graph.graph_name,
-        "env_id": graph.env_id,
+        "id": graph.graph_id or graph.graph_name,
+        "name": graph.graph_name,
         "node_count": len(graph.nodes),
         "edge_count": len(graph.edges),
         "enabled_edge_count": sum(1 for edge in graph.edges if edge.enabled),
         "group_colors": group_colors,
         "bridge_count": bridge_count,
-        "is_legacy": is_legacy,
         "updated_at": datetime.fromtimestamp(stat.st_mtime).isoformat(timespec="seconds"),
     }
 
 
-def _serialize_graph_payload(graph_path: Path, graph: RouteGraph, is_legacy: bool) -> dict[str, Any]:
+def _serialize_graph_payload(graph_path: Path, graph: RouteGraph) -> dict[str, Any]:
     return {
         "path": _graph_relative_path(graph_path),
         "graph": graph.to_dict(),
-        "summary": _serialize_graph_summary(graph_path, graph, is_legacy),
+        "summary": _serialize_graph_summary(graph_path, graph),
         "ui_state": _serialize_graph_ui_state(graph.meta),
         "group_editor_state": _serialize_group_editor_state(graph),
     }
@@ -529,7 +473,7 @@ def _serialize_validation_report(graph: RouteGraph) -> dict[str, Any]:
 
 def _persist_graph(graph_path: Path, graph: RouteGraph) -> dict[str, Any]:
     save_graph(graph_path, graph)
-    return _serialize_graph_payload(graph_path, graph, is_legacy=False)
+    return _serialize_graph_payload(graph_path, graph)
 
 
 def _resolve_candidate_set(request_payload: dict[str, Any]) -> RouteCandidateSet:
@@ -707,7 +651,7 @@ async def update_last_graph(request: ScopedGraphRequest) -> dict[str, Any]:
             _clear_webui_app_state()
             return {"last_graph": None}
 
-        graph_path, _, _ = _load_graph(request.graph)
+        graph_path, _ = _load_graph(request.graph)
         normalized_graph = _graph_relative_path(graph_path)
         state = _write_webui_app_state({"last_graph": normalized_graph})
         return {"last_graph": state.get("last_graph"), "updated_at": state.get("updated_at")}
@@ -722,18 +666,19 @@ async def list_graphs() -> dict[str, Any]:
         graphs: list[dict[str, Any]] = []
         for graph_path in _list_graph_paths():
             try:
-                _, graph, is_legacy = _load_graph(_graph_relative_path(graph_path))
+                _, graph = _load_graph(_graph_relative_path(graph_path))
             except Exception as exc:
                 graphs.append(
                     {
                         "path": _graph_relative_path(graph_path),
                         "file_name": graph_path.name,
-                        "graph_name": graph_path.stem,
+                        "id": graph_path.stem,
+                        "name": graph_path.stem,
                         "load_error": str(exc),
                     }
                 )
                 continue
-            graphs.append(_serialize_graph_summary(graph_path, graph, is_legacy))
+            graphs.append(_serialize_graph_summary(graph_path, graph))
 
         return {
             "default_graph": _graph_relative_path(default_graph),
@@ -746,8 +691,8 @@ async def list_graphs() -> dict[str, Any]:
 
 async def get_graph(graph: str | None = Query(default=None)) -> dict[str, Any]:
     try:
-        graph_path, loaded_graph, is_legacy = _load_graph(graph)
-        return _serialize_graph_payload(graph_path, loaded_graph, is_legacy)
+        graph_path, loaded_graph = _load_graph(graph)
+        return _serialize_graph_payload(graph_path, loaded_graph)
     except Exception as exc:
         _raise_http_error(exc)
         return {}
@@ -755,7 +700,7 @@ async def get_graph(graph: str | None = Query(default=None)) -> dict[str, Any]:
 
 async def validate_current_graph(graph: str | None = Query(default=None)) -> dict[str, Any]:
     try:
-        _, loaded_graph, _ = _load_graph(graph)
+        _, loaded_graph = _load_graph(graph)
         return _serialize_validation_report(loaded_graph)
     except Exception as exc:
         _raise_http_error(exc)
@@ -764,7 +709,7 @@ async def validate_current_graph(graph: str | None = Query(default=None)) -> dic
 
 async def plan_routes(request: GeneratePlanRequest) -> dict[str, Any]:
     try:
-        _, loaded_graph, _ = _load_graph(request.graph)
+        _, loaded_graph = _load_graph(request.graph)
         candidate_set = generate_manual_candidate_set(
             loaded_graph,
             start_node=request.start_node,
@@ -786,7 +731,7 @@ async def plan_routes(request: GeneratePlanRequest) -> dict[str, Any]:
 
 async def auto_plan(request: GenerateAutoPlanRequest) -> dict[str, Any]:
     try:
-        _, loaded_graph, _ = _load_graph(request.graph)
+        _, loaded_graph = _load_graph(request.graph)
         config = request.model_dump(exclude={"graph"}, exclude_none=True)
         candidate_set = generate_auto_candidate_set(
             loaded_graph,
@@ -801,7 +746,7 @@ async def auto_plan(request: GenerateAutoPlanRequest) -> dict[str, Any]:
 async def create_auto_plan_job(request: GenerateAutoPlanRequest) -> dict[str, Any]:
     try:
         _cleanup_expired_auto_plan_jobs()
-        graph_path, loaded_graph, _ = _load_graph(request.graph)
+        graph_path, loaded_graph = _load_graph(request.graph)
         graph_ref = _graph_relative_path(graph_path)
         job_config = request.model_dump(exclude={"graph"}, exclude_none=True)
         auto_plan_job_service.worker_path = AUTO_PLAN_WORKER_PATH
@@ -881,7 +826,7 @@ async def cancel_auto_plan_job(job_id: int) -> dict[str, Any]:
 
 async def move_node(request: NodeMoveRequest) -> dict[str, Any]:
     try:
-        graph_path, loaded_graph, _ = _load_graph(request.graph)
+        graph_path, loaded_graph = _load_graph(request.graph)
         editor = GraphEditor(loaded_graph)
         editor.update_node_xy(request.node_id, request.x, request.y)
         return _persist_graph(graph_path, loaded_graph)
@@ -892,7 +837,7 @@ async def move_node(request: NodeMoveRequest) -> dict[str, Any]:
 
 async def update_node(request: NodeUpdateRequest) -> dict[str, Any]:
     try:
-        graph_path, loaded_graph, _ = _load_graph(request.graph)
+        graph_path, loaded_graph = _load_graph(request.graph)
         editor = GraphEditor(loaded_graph)
 
         if "name" in request.model_fields_set:
@@ -913,7 +858,7 @@ async def update_node(request: NodeUpdateRequest) -> dict[str, Any]:
 
 async def add_edge(request: AddEdgeRequest) -> dict[str, Any]:
     try:
-        graph_path, loaded_graph, _ = _load_graph(request.graph)
+        graph_path, loaded_graph = _load_graph(request.graph)
         editor = GraphEditor(loaded_graph)
         edge_meta = resolve_edge_creation_meta(
             loaded_graph,
@@ -936,7 +881,7 @@ async def add_edge(request: AddEdgeRequest) -> dict[str, Any]:
 
 async def update_edge(request: UpdateEdgeRequest) -> dict[str, Any]:
     try:
-        graph_path, loaded_graph, _ = _load_graph(request.graph)
+        graph_path, loaded_graph = _load_graph(request.graph)
         edge = loaded_graph.get_edge(request.edge_id)
         if "enabled" in request.model_fields_set and request.enabled is not None:
             edge.enabled = bool(request.enabled)
@@ -968,7 +913,7 @@ async def update_edge(request: UpdateEdgeRequest) -> dict[str, Any]:
 
 async def remove_edge(request: RemoveEdgeRequest) -> dict[str, Any]:
     try:
-        graph_path, loaded_graph, _ = _load_graph(request.graph)
+        graph_path, loaded_graph = _load_graph(request.graph)
         editor = GraphEditor(loaded_graph)
         editor.remove_edge(request.edge_id)
         return _persist_graph(graph_path, loaded_graph)
@@ -979,7 +924,7 @@ async def remove_edge(request: RemoveEdgeRequest) -> dict[str, Any]:
 
 async def remove_edge_between(request: RemoveEdgeBetweenRequest) -> dict[str, Any]:
     try:
-        graph_path, loaded_graph, _ = _load_graph(request.graph)
+        graph_path, loaded_graph = _load_graph(request.graph)
         editor = GraphEditor(loaded_graph)
         editor.remove_edge_between(request.from_node, request.to_node)
         return _persist_graph(graph_path, loaded_graph)
@@ -990,7 +935,7 @@ async def remove_edge_between(request: RemoveEdgeBetweenRequest) -> dict[str, An
 
 async def update_canvas_view(request: UpdateCanvasViewRequest) -> dict[str, Any]:
     try:
-        graph_path, loaded_graph, _ = _load_graph(request.graph)
+        graph_path, loaded_graph = _load_graph(request.graph)
         sync_graph_gui_canvas_view(
             loaded_graph.meta,
             {
@@ -1007,7 +952,7 @@ async def update_canvas_view(request: UpdateCanvasViewRequest) -> dict[str, Any]
 
 async def update_graph_ui_state(request: UpdateGraphUiStateRequest) -> dict[str, Any]:
     try:
-        graph_path, loaded_graph, _ = _load_graph(request.graph)
+        graph_path, loaded_graph = _load_graph(request.graph)
         ui_state = _merge_graph_ui_state(
             loaded_graph.meta,
             planner_inputs=request.planner_inputs,
@@ -1027,7 +972,7 @@ async def update_graph_ui_state(request: UpdateGraphUiStateRequest) -> dict[str,
 
 async def update_graph_group_config(request: UpdateGraphGroupConfigRequest) -> dict[str, Any]:
     try:
-        graph_path, loaded_graph, _ = _load_graph(request.graph)
+        graph_path, loaded_graph = _load_graph(request.graph)
         if "group_color" in request.model_fields_set and request.group_color is not None:
             normalized_group_color = normalize_hex_color(
                 request.group_color,

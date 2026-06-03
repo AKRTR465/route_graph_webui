@@ -27,7 +27,9 @@ def dump_json(path: str | Path, data: Mapping[str, Any]) -> Path:
 
 
 def load_graph(path: str | Path) -> RouteGraph:
-    return RouteGraph.from_mapping(load_json(path))
+    graph = RouteGraph.from_mapping(load_json(path))
+    ensure_valid_graph(graph)
+    return graph
 
 
 def save_graph(path: str | Path, graph: RouteGraph) -> Path:

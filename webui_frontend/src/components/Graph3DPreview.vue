@@ -14,6 +14,7 @@ import {
   type Graph3DZLayerMode,
   type ScenePoint3,
 } from '../lib/graph-3d-view'
+import { edgeWebuiExtension } from '../lib/graph-format'
 import {
   DEFAULT_BRIDGE_COLOR,
   DEFAULT_GROUP_COLOR,
@@ -97,11 +98,11 @@ function normalizeHexColor(value: unknown): string | null {
 }
 
 function edgeKind(edge: GraphEdge) {
-  return edge.meta?.[EDGE_KIND_META_KEY] === EDGE_KIND_BRIDGE ? EDGE_KIND_BRIDGE : 'group'
+  return edgeWebuiExtension(edge)[EDGE_KIND_META_KEY] === EDGE_KIND_BRIDGE ? EDGE_KIND_BRIDGE : 'group'
 }
 
 function edgeBaseColor(edge: GraphEdge) {
-  const rawColor = edge.meta?.[EDGE_GROUP_COLOR_META_KEY]
+  const rawColor = edgeWebuiExtension(edge)[EDGE_GROUP_COLOR_META_KEY]
   const color = normalizeHexColor(rawColor)
   if (color) {
     return color
@@ -177,8 +178,8 @@ const minimapModel = computed(() => {
 
   const miniEdges: MiniMapEdge[] = []
   for (const edge of graph.edges) {
-    const from = projectedNodeLookup.get(edge.from)
-    const to = projectedNodeLookup.get(edge.to)
+    const from = projectedNodeLookup.get(edge.source)
+    const to = projectedNodeLookup.get(edge.target)
     if (!from || !to) {
       continue
     }
@@ -452,8 +453,8 @@ function addEdges(
   const routeEdgeIds = new Set(selectedCandidate()?.edge_passes.map((edgePass) => edgePass.edge_id) ?? [])
   const focusColor = normalizedGroupFocusColor()
   for (const edge of props.graph?.edges ?? []) {
-    const fromPosition = nodePositions.get(edge.from)
-    const toPosition = nodePositions.get(edge.to)
+    const fromPosition = nodePositions.get(edge.source)
+    const toPosition = nodePositions.get(edge.target)
     if (!fromPosition || !toPosition) {
       continue
     }
@@ -536,7 +537,7 @@ function rebuildScene() {
   const grouping = resolveGraph3DGrouping(props.graph, props.candidateSet)
   const metrics = computeGraph3DSceneMetrics(props.graph, nodePositions)
   const sceneSignature = [
-    props.graph?.graph_name ?? '',
+    props.graph?.name ?? '',
     props.graph?.nodes.length ?? 0,
     props.graph?.edges.length ?? 0,
     props.zLayerMode,

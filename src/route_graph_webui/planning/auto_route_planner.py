@@ -492,6 +492,11 @@ def _clone_graph_edge(edge: GraphEdge) -> GraphEdge:
         enabled=bool(edge.enabled),
         bidirectional=bool(edge.bidirectional),
         meta=dict(edge.meta),
+        metrics=dict(edge.metrics),
+        properties=dict(edge.properties),
+        extensions=dict(edge.extensions),
+        metrics_explicit=bool(edge.metrics_explicit),
+        weight_explicit=bool(edge.weight_explicit),
     )
 
 
@@ -539,6 +544,7 @@ def _build_allowed_route_group_graph(
         env_id=graph.env_id,
         graph_name=graph.graph_name,
         default_altitude=graph.default_altitude,
+        graph_id=graph.graph_id,
         nodes=[
             clone_graph_node(node)
             for node in graph.nodes
@@ -550,6 +556,10 @@ def _build_allowed_route_group_graph(
             if edge.from_node in allowed_node_ids and edge.to_node in allowed_node_ids
         ],
         meta=filtered_meta,
+        format_version=graph.format_version,
+        coordinate_system=dict(graph.coordinate_system),
+        properties=dict(graph.properties),
+        extensions=dict(graph.extensions),
     )
 
 

@@ -62,6 +62,14 @@ import {
   resolvePaletteSelectionResult,
 } from './lib/palette-selection'
 import { resolveEdgeCreationIntent as resolveSharedEdgeCreationIntent } from './lib/edge-intent'
+import {
+  edgeCost,
+  edgeWebuiExtension,
+  graphWebuiExtension,
+  nodeLabel,
+  nodeSampleRadius,
+  nodeYawHint,
+} from './lib/graph-format'
 import { resolveNodePulseState } from './lib/node-pulse'
 import { depthCardDirective, type DepthCardOptions } from './lib/depth-card'
 import type { CanvasDisplayMode, Graph3DZLayerMode } from './lib/graph-3d-view'
@@ -738,13 +746,12 @@ watch(
       nodeDraft.sampleRadius = ''
       return
     }
-    nodeDraft.name = node.name
+    nodeDraft.name = nodeLabel(node)
     nodeDraft.tagsText = node.tags.join(', ')
-    nodeDraft.yawHint = node.yaw_hint == null ? '' : String(node.yaw_hint)
-    nodeDraft.sampleRadius =
-      typeof node.meta.node_sample_radius === 'number'
-        ? String(node.meta.node_sample_radius)
-        : ''
+    const yawHint = nodeYawHint(node)
+    const sampleRadius = nodeSampleRadius(node)
+    nodeDraft.yawHint = yawHint == null ? '' : String(yawHint)
+    nodeDraft.sampleRadius = sampleRadius == null ? '' : String(sampleRadius)
   },
   { immediate: true },
 )
@@ -1627,7 +1634,7 @@ function normalizeCanvasViewState(rawValue: unknown): CanvasViewState {
 }
 
 function readCanvasViewStateFromGraph(nextGraph: RouteGraph | null): CanvasViewState {
-  return normalizeCanvasViewState(nextGraph?.meta?.[CANVAS_VIEW_META_KEY])
+  return normalizeCanvasViewState(graphWebuiExtension(nextGraph)[CANVAS_VIEW_META_KEY])
 }
 
 function computeGraphViewCenter(nextGraph: RouteGraph | null): [number, number] {
@@ -2334,7 +2341,7 @@ function syncCandidateSelections() {
 
 function upsertGraphSummary(summary: GraphSummary) {
   upsertGraphSummaryInState(summary)
-  graphCatalog.value.sort((left, right) => left.graph_name.localeCompare(right.graph_name))
+  graphCatalog.value.sort((left, right) => left.name.localeCompare(right.name))
 }
 
 function normalizePlanAnchors(nextGraph: RouteGraph) {
@@ -2507,7 +2514,7 @@ function syncCandidateSetGraphMeta(envelope: GraphEnvelope) {
   if (!candidateSet.value) {
     return
   }
-  const graphMeta = envelope.graph.meta ?? {}
+  const graphMeta = graphWebuiExtension(envelope.graph)
   const nextCandidateMeta = {
     ...candidateSet.value.meta,
     [GRAPH_GROUP_CONFIGS_META_KEY]:
@@ -2629,7 +2636,7 @@ async function loadGraphState(
     }
     if (!quiet) {
       if (restoreOutcome === 'none') {
-        setBanner(`已加载图 ${envelope.summary.graph_name}`, 'success')
+        setBanner(`已加载图 ${envelope.summary.name}`, 'success')
       }
     }
     return restoreOutcome
@@ -2658,7 +2665,7 @@ async function initialize() {
       setGraph3DViewportLockState(shouldRestoreGraph3DViewportLock, { persist: false })
     }
     if (graphEnvelope.value && restoreOutcome === 'none') {
-      setBanner(`网页控制台已就绪，当前图：${graphEnvelope.value.summary.graph_name}`, 'success')
+      setBanner(`网页控制台已就绪，当前图：${graphEnvelope.value.summary.name}`, 'success')
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : '初始化失败'
@@ -2696,7 +2703,7 @@ function handleGraphPicker(event: Event) {
 async function refreshCurrentGraph() {
   const restoreOutcome = await loadGraphState(currentGraphPath.value || undefined, { quiet: true })
   if (graphEnvelope.value && restoreOutcome === 'none') {
-    setBanner(`已刷新 ${graphEnvelope.value.summary.graph_name}`, 'success')
+    setBanner(`已刷新 ${graphEnvelope.value.summary.name}`, 'success')
   }
 }
 
@@ -3683,7 +3690,9 @@ function formatUpdatedAt(value: string | undefined) {
 }
 
 function resolveEdgeKind(edge: GraphEdge) {
-  return edge.meta[EDGE_KIND_META_KEY] === EDGE_KIND_BRIDGE ? EDGE_KIND_BRIDGE : EDGE_KIND_GROUP
+  return edgeWebuiExtension(edge)[EDGE_KIND_META_KEY] === EDGE_KIND_BRIDGE
+    ? EDGE_KIND_BRIDGE
+    : EDGE_KIND_GROUP
 }
 
 function deriveGraphColorGroupingState(targetGraph: RouteGraph | null) {
@@ -3703,8 +3712,8 @@ function deriveGraphColorGroupingState(targetGraph: RouteGraph | null) {
       continue
     }
     const edgeColor = resolveEdgeBaseColor(edge)
-    nodeGroupCandidates.get(edge.from)?.add(edgeColor)
-    nodeGroupCandidates.get(edge.to)?.add(edgeColor)
+    nodeGroupCandidates.get(edge.source)?.add(edgeColor)
+    nodeGroupCandidates.get(edge.target)?.add(edgeColor)
   }
   const nodeGroupLookup = new Map<string, string>()
   for (const [nodeId, candidateColors] of nodeGroupCandidates.entries()) {
@@ -3726,7 +3735,7 @@ function resolveEdgeBaseColor(edge: GraphEdge) {
   if (resolveEdgeKind(edge) === EDGE_KIND_BRIDGE) {
     return bridgeColor.value
   }
-  const rawColor = edge.meta[EDGE_GROUP_COLOR_META_KEY]
+  const rawColor = edgeWebuiExtension(edge)[EDGE_GROUP_COLOR_META_KEY]
   return typeof rawColor === 'string' && rawColor.trim()
     ? rawColor.toUpperCase()
     : DEFAULT_GROUP_COLOR
@@ -3908,8 +3917,8 @@ const flowEdges = computed<FlowEdge[]>(() => {
   return graph.value.edges.map((edge) => {
     const highlighted = routeEdgeIdSet.value.has(edge.id)
     const selected = edge.id === selectedEdgeId.value
-    const sourceNode = graphNodeMap.value.get(edge.from)
-    const targetNode = graphNodeMap.value.get(edge.to)
+    const sourceNode = graphNodeMap.value.get(edge.source)
+    const targetNode = graphNodeMap.value.get(edge.target)
     const sourceDirection = resolveEdgeDirection(sourceNode, targetNode)
     const targetDirection = oppositeDirection(sourceDirection)
     const baseColor = resolveEdgeBaseColor(edge)
@@ -3931,8 +3940,8 @@ const flowEdges = computed<FlowEdge[]>(() => {
     }
     return {
       id: edge.id,
-      source: edge.from,
-      target: edge.to,
+      source: edge.source,
+      target: edge.target,
       type: 'straight',
       sourceHandle: 'source-center',
       targetHandle: 'target-center',
@@ -3942,7 +3951,7 @@ const flowEdges = computed<FlowEdge[]>(() => {
       animated: false,
       selectable: true,
       markerEnd:
-        edge.enabled && !edge.bidirectional
+        edge.enabled && edge.directed
           ? {
               type: MarkerType.ArrowClosed,
               color: strokeColor,
@@ -4055,7 +4064,7 @@ onBeforeUnmount(() => {
         <EdgeInspector
           :depth-card="leftRailDepthCard"
           :selected-edge="selectedEdge"
-          :selected-edge-length-text="selectedEdge ? formatDistance(selectedEdge.weight) : ''"
+          :selected-edge-length-text="selectedEdge && edgeCost(selectedEdge) != null ? formatDistance(edgeCost(selectedEdge) as number) : ''"
           :selected-edge-kind-label="selectedEdge ? (resolveEdgeKind(selectedEdge) === 'bridge' ? '桥接边' : '分组边') : ''"
           :selected-edge-color-text="selectedEdgeColorText"
           :mutating-edge="mutatingEdge"

@@ -15,7 +15,7 @@ from .meta import (
     EDGE_KIND_META_KEY,
     NODE_SAMPLE_RADIUS_META_KEY,
 )
-from .model import GraphEdge, GraphNode, GraphSchemaError, RouteGraph, edge_xy_weight
+from .model import GraphEdge, GraphNode, GraphSchemaError, RouteGraph, edge_planning_weight, edge_xy_weight
 from .validation import validate_graph
 
 
@@ -131,6 +131,10 @@ class GraphEditor:
             enabled=enabled,
             bidirectional=bidirectional,
             meta=dict(meta or {}),
+            metrics={
+                "length": float(weight),
+                "cost": float(weight),
+            },
         )
         self.graph.edges.append(edge)
         return edge
@@ -206,8 +210,9 @@ class GraphEditor:
         )
         self.graph.nodes.append(inserted_node)
 
-        first_weight = float(edge.weight) * resolved_ratio
-        second_weight = float(edge.weight) - first_weight
+        base_weight = edge_planning_weight(edge, self._node_map())
+        first_weight = float(base_weight) * resolved_ratio
+        second_weight = float(base_weight) - first_weight
         first_meta = dict(edge.meta)
         second_meta = dict(edge.meta)
         self.add_edge(
@@ -242,7 +247,12 @@ class GraphEditor:
         for edge in self.graph.edges:
             if selected and edge.id not in selected:
                 continue
-            edge.weight = edge_xy_weight(node_map[edge.from_node], node_map[edge.to_node])
+            weight = edge_xy_weight(node_map[edge.from_node], node_map[edge.to_node])
+            edge.weight = weight
+            edge.metrics["length"] = weight
+            edge.metrics["cost"] = weight
+            edge.metrics_explicit = True
+            edge.weight_explicit = True
 
     def set_edge_enabled(self, edge_id: str, enabled: bool) -> None:
         self.graph.get_edge(edge_id).enabled = bool(enabled)

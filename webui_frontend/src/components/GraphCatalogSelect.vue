@@ -21,7 +21,7 @@ const emit = defineEmits<{
     <div class="header-control-card__body">
       <select class="header-control-select" :value="currentGraphPath" @change="emit('change', $event)">
         <option v-for="item in availableGraphs" :key="item.path" :value="item.path">
-          {{ item.graph_name }} · {{ item.file_name }}
+          {{ item.name }} · {{ item.file_name }}
         </option>
       </select>
     </div>

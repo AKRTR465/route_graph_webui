@@ -1,847 +1,1161 @@
 {
-  "schema_version": 1,
-  "env_id": "UnrealTrack-ModularBuilding-ContinuousColor-v0",
-  "graph_name": "ModularBuilding",
-  "default_altitude": null,
+  "format": "route-graph",
+  "format_version": 1,
+  "id": "ModularBuilding",
+  "name": "ModularBuilding",
+  "coordinate_system": {
+    "type": "cartesian",
+    "axes": [
+      "x",
+      "y",
+      "z"
+    ],
+    "unit": "cm"
+  },
+  "properties": {},
   "nodes": [
     {
       "id": "N001",
-      "name": "N001",
+      "label": "N001",
       "position": [
         8750.919,
         7348.447,
         579.11
       ],
-      "yaw_hint": 176.398,
       "tags": [],
-      "meta": {
+      "properties": {
         "captured_at": "2026-04-06T12:28:57"
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 176.398
+        }
       }
     },
     {
       "id": "N005",
-      "name": "N005",
+      "label": "N005",
       "position": [
         -5176.869,
         10439.615,
         588.004
       ],
-      "yaw_hint": -93.629,
       "tags": [],
-      "meta": {
+      "properties": {
         "captured_at": "2026-04-06T12:30:14"
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": -93.629
+        }
       }
     },
     {
       "id": "N006",
-      "name": "N006",
+      "label": "N006",
       "position": [
         -7738.937,
         7493.603,
         588.006
       ],
-      "yaw_hint": -2.511,
       "tags": [],
-      "meta": {
+      "properties": {
         "captured_at": "2026-04-06T12:30:34"
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": -2.511
+        }
       }
     },
     {
       "id": "N008",
-      "name": "N008",
+      "label": "N008",
       "position": [
         -7865.786,
         3128.786,
         588.009
       ],
-      "yaw_hint": 177.962,
       "tags": [],
-      "meta": {
+      "properties": {
         "captured_at": "2026-04-06T12:30:58"
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 177.962
+        }
       }
     },
     {
       "id": "N010",
-      "name": "N010",
+      "label": "N010",
       "position": [
         559.695,
         -337.155,
         588.013
       ],
-      "yaw_hint": -3.501,
       "tags": [],
-      "meta": {
+      "properties": {
         "captured_at": "2026-04-06T12:31:35"
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": -3.501
+        }
       }
     },
     {
       "id": "N013",
-      "name": "N013",
+      "label": "N013",
       "position": [
         9086.073,
         -3711.193,
         588.017
       ],
-      "yaw_hint": 0.154,
       "tags": [],
-      "meta": {
+      "properties": {
         "captured_at": "2026-04-06T12:32:06"
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 0.154
+        }
       }
     },
     {
       "id": "N014",
-      "name": "N014",
+      "label": "N014",
       "position": [
         5864.463,
         -7977.952,
         588.019
       ],
-      "yaw_hint": 173.068,
       "tags": [],
-      "meta": {
+      "properties": {
         "captured_at": "2026-04-06T12:32:23"
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 173.068
+        }
       }
     },
     {
       "id": "N016",
-      "name": "N016",
+      "label": "N016",
       "position": [
         3933.281,
         -10685.826,
         588.021
       ],
-      "yaw_hint": -90.877,
       "tags": [],
-      "meta": {
+      "properties": {
         "captured_at": "2026-04-06T12:32:39"
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": -90.877
+        }
       }
     },
     {
       "id": "N019",
-      "name": "N019",
+      "label": "N019",
       "position": [
         -2779.329,
         -10694.582,
         588.025
       ],
-      "yaw_hint": -89.791,
       "tags": [],
-      "meta": {
+      "properties": {
         "captured_at": "2026-04-06T12:33:11"
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": -89.791
+        }
       }
     },
     {
       "id": "N020",
-      "name": "N020",
+      "label": "N020",
       "position": [
         -4921.164,
         -8003.856,
         588.027
       ],
-      "yaw_hint": 110.983,
       "tags": [],
-      "meta": {
+      "properties": {
         "captured_at": "2026-04-06T12:33:23"
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 110.983
+        }
       }
     },
     {
       "id": "N021",
-      "name": "N021",
+      "label": "N021",
       "position": [
         6034.725892,
         7372.356956,
         580.575341
       ],
-      "yaw_hint": 146.928283,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E002",
         "inserted_edge_ratio": 0.1647190313718622
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 146.928283
+        }
       }
     },
     {
       "id": "N022",
-      "name": "N022",
+      "label": "N022",
       "position": [
         484.690925,
         7421.212499,
         583.569491
       ],
-      "yaw_hint": 86.712402,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E003",
         "inserted_edge_ratio": 0.40294546266051984
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 86.712402
+        }
       }
     },
     {
       "id": "N023",
-      "name": "N023",
+      "label": "N023",
       "position": [
         -5058.868129,
         7470.011037,
         586.560148
       ],
-      "yaw_hint": 26.566782,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E004",
         "inserted_edge_ratio": 0.6741013946830218
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 26.566782
+        }
       }
     },
     {
       "id": "N002",
-      "name": "N002",
+      "label": "N002",
       "position": [
         5949.197434,
         -338.590701,
         584.314527
       ],
-      "yaw_hint": 160.059093,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E006",
         "inserted_edge_ratio": 0.5023317562277374
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 160.059093
+        }
       }
     },
     {
       "id": "N003",
-      "name": "N003",
+      "label": "N003",
       "position": [
         -4989.761109,
         -295.571946,
         587.29629
       ],
-      "yaw_hint": 68.931185,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E003",
         "inserted_edge_ratio": 0.5018514741068464
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 68.931185
+        }
       }
     },
     {
       "id": "N004",
-      "name": "N004",
+      "label": "N004",
       "position": [
         -5019.18394,
         3010.683153,
         586.982872
       ],
-      "yaw_hint": 50.894223,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E006",
         "inserted_edge_ratio": 0.5742425126135808
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 50.894223
+        }
       }
     },
     {
       "id": "N024",
-      "name": "N024",
+      "label": "N024",
       "position": [
         -2747.963091,
         -7998.636591,
         588.025388
       ],
-      "yaw_hint": 123.492535,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E004",
         "inserted_edge_ratio": 0.20149045661813228
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 123.492535
+        }
       }
     },
     {
       "id": "N025",
-      "name": "N025",
+      "label": "N025",
       "position": [
         481.038729,
         -7990.88145,
         588.022993
       ],
-      "yaw_hint": 142.079547,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E011",
         "inserted_edge_ratio": 0.37492360296657645
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 142.079547
+        }
       }
     },
     {
       "id": "N026",
-      "name": "N026",
+      "label": "N026",
       "position": [
         3916.572584,
         -7982.630277,
         588.020445
       ],
-      "yaw_hint": 161.855413,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E012",
         "inserted_edge_ratio": 0.6381688831836164
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 161.855413
+        }
       }
     },
     {
       "id": "N007",
-      "name": "N007",
+      "label": "N007",
       "position": [
         5911.307965,
         -3754.573197,
         585.971003
       ],
-      "yaw_hint": 165.876097,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E008",
         "inserted_edge_ratio": 0.4471555098326942
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 165.876097
+        }
       }
     },
     {
       "id": "N009",
-      "name": "N009",
+      "label": "N009",
       "position": [
         -4954.494069,
         -4258.543125,
         587.671962
       ],
-      "yaw_hint": 90.5508,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E004",
         "inserted_edge_ratio": 0.5141184667047024
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 90.5508
+        }
       }
     },
     {
       "id": "N011",
-      "name": "N011",
+      "label": "N011",
       "position": [
         519.08679,
         -4288.577145,
         588.018159
       ],
-      "yaw_hint": 71.658493,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E015",
         "inserted_edge_ratio": 0.5162742842766259
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 71.658493
+        }
       }
     },
     {
       "id": "N012",
-      "name": "N012",
+      "label": "N012",
       "position": [
         523.932533,
         3362.088854,
         585.894304
       ],
-      "yaw_hint": 39.513381,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E020",
         "inserted_edge_ratio": 0.5231930100966226
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 39.513381
+        }
       }
     },
     {
       "id": "N015",
-      "name": "N015",
+      "label": "N015",
       "position": [
         5989.582975,
         3302.42894,
         582.548927
       ],
-      "yaw_hint": 153.858878,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E007",
         "inserted_edge_ratio": 0.5278116512697983
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 153.858878
+        }
       }
     },
     {
       "id": "N017",
-      "name": "N017",
+      "label": "N017",
       "position": [
         3414.432131,
         7395.422734,
         581.988945
       ],
-      "yaw_hint": 118.499039,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E002",
         "inserted_edge_ratio": 0.4721220274470534
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 118.499039
+        }
       }
     },
     {
       "id": "N018",
-      "name": "N018",
+      "label": "N018",
       "position": [
         -2438.247747,
         7446.942383,
         585.146367
       ],
-      "yaw_hint": 54.99957,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E021",
         "inserted_edge_ratio": 0.47273247316553124
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 54.99957
+        }
       }
     },
     {
       "id": "N027",
-      "name": "N027",
+      "label": "N027",
       "position": [
         -2438.421154,
         -314.689587,
         587.625795
       ],
-      "yaw_hint": 35.630781,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E012",
         "inserted_edge_ratio": 0.4597459472126687
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 35.630781
+        }
       }
     },
     {
       "id": "N028",
-      "name": "N028",
+      "label": "N028",
       "position": [
         3170.987275,
         -337.850618,
         586.221036
       ],
-      "yaw_hint": 75.746243,
       "tags": [],
-      "meta": {
+      "properties": {
         "inserted_from_edge_id": "E014",
         "inserted_edge_ratio": 0.48451453672626027
+      },
+      "extensions": {
+        "uav": {
+          "yaw_hint_deg": 75.746243
+        }
       }
     }
   ],
   "edges": [
     {
       "id": "E001",
-      "from": "N001",
-      "to": "N021",
-      "weight": 2716.298342,
+      "source": "N001",
+      "target": "N021",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2716.298342,
+        "cost": 2716.298342
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E005",
-      "from": "N023",
-      "to": "N006",
-      "weight": 2680.172707,
+      "source": "N023",
+      "target": "N006",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2680.172707,
+        "cost": 2680.172707
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E003",
-      "from": "N023",
-      "to": "N004",
-      "weight": 4459.504458,
+      "source": "N023",
+      "target": "N004",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 4459.504458,
+        "cost": 4459.504458
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E010",
-      "from": "N004",
-      "to": "N003",
-      "weight": 3306.386015,
+      "source": "N004",
+      "target": "N003",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3306.386015,
+        "cost": 3306.386015
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E006",
-      "from": "N020",
-      "to": "N024",
-      "weight": 2173.207177,
+      "source": "N020",
+      "target": "N024",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2173.207177,
+        "cost": 2173.207177
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E011",
-      "from": "N025",
-      "to": "N026",
-      "weight": 3435.543763,
+      "source": "N025",
+      "target": "N026",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3435.543763,
+        "cost": 3435.543763
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E013",
-      "from": "N026",
-      "to": "N014",
-      "weight": 1947.896034,
+      "source": "N026",
+      "target": "N014",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 1947.896034,
+        "cost": 1947.896034
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E009",
-      "from": "N024",
-      "to": "N025",
-      "weight": 3229.011133,
+      "source": "N024",
+      "target": "N025",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3229.011133,
+        "cost": 3229.011133
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E016",
-      "from": "N019",
-      "to": "N024",
-      "weight": 2696.127866,
+      "source": "N019",
+      "target": "N024",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2696.127866,
+        "cost": 2696.127866
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E017",
-      "from": "N026",
-      "to": "N016",
-      "weight": 2703.24736,
+      "source": "N026",
+      "target": "N016",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2703.24736,
+        "cost": 2703.24736
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E018",
-      "from": "N002",
-      "to": "N007",
-      "weight": 3416.192622,
+      "source": "N002",
+      "target": "N007",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3416.192622,
+        "cost": 3416.192622
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E019",
-      "from": "N007",
-      "to": "N014",
-      "weight": 4223.638593,
+      "source": "N007",
+      "target": "N014",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 4223.638593,
+        "cost": 4223.638593
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E008",
-      "from": "N007",
-      "to": "N013",
-      "weight": 3175.061396,
+      "source": "N007",
+      "target": "N013",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3175.061396,
+        "cost": 3175.061396
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E022",
-      "from": "N023",
-      "to": "N005",
-      "weight": 2971.947493,
+      "source": "N023",
+      "target": "N005",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2971.947493,
+        "cost": 2971.947493
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E023",
-      "from": "N004",
-      "to": "N008",
-      "weight": 2849.050995,
+      "source": "N004",
+      "target": "N008",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2849.050995,
+        "cost": 2849.050995
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E024",
-      "from": "N003",
-      "to": "N009",
-      "weight": 3963.128099,
+      "source": "N003",
+      "target": "N009",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3963.128099,
+        "cost": 3963.128099
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E025",
-      "from": "N009",
-      "to": "N020",
-      "weight": 3745.461177,
+      "source": "N009",
+      "target": "N020",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3745.461177,
+        "cost": 3745.461177
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E004",
-      "from": "N010",
-      "to": "N011",
-      "weight": 3951.630802,
+      "source": "N010",
+      "target": "N011",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3951.630802,
+        "cost": 3951.630802
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E026",
-      "from": "N011",
-      "to": "N025",
-      "weight": 3702.499807,
+      "source": "N011",
+      "target": "N025",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3702.499807,
+        "cost": 3702.499807
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E015",
-      "from": "N022",
-      "to": "N012",
-      "weight": 4059.313325,
+      "source": "N022",
+      "target": "N012",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 4059.313325,
+        "cost": 4059.313325
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E027",
-      "from": "N012",
-      "to": "N010",
-      "weight": 3699.416717,
+      "source": "N012",
+      "target": "N010",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3699.416717,
+        "cost": 3699.416717
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E020",
-      "from": "N021",
-      "to": "N015",
-      "weight": 4070.178366,
+      "source": "N021",
+      "target": "N015",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 4070.178366,
+        "cost": 4070.178366
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E028",
-      "from": "N015",
-      "to": "N002",
-      "weight": 3641.243609,
+      "source": "N015",
+      "target": "N002",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 3641.243609,
+        "cost": 3641.243609
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E007",
-      "from": "N021",
-      "to": "N017",
-      "weight": 2620.39528,
+      "source": "N021",
+      "target": "N017",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2620.39528,
+        "cost": 2620.39528
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E029",
-      "from": "N017",
-      "to": "N022",
-      "weight": 2929.854714,
+      "source": "N017",
+      "target": "N022",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2929.854714,
+        "cost": 2929.854714
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E002",
-      "from": "N023",
-      "to": "N018",
-      "weight": 2620.721913,
+      "source": "N023",
+      "target": "N018",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2620.721913,
+        "cost": 2620.721913
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E030",
-      "from": "N018",
-      "to": "N022",
-      "weight": 2923.051917,
+      "source": "N018",
+      "target": "N022",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2923.051917,
+        "cost": 2923.051917
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E021",
-      "from": "N003",
-      "to": "N027",
-      "weight": 2551.41158,
+      "source": "N003",
+      "target": "N027",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2551.41158,
+        "cost": 2551.41158
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E031",
-      "from": "N027",
-      "to": "N010",
-      "weight": 2998.200321,
+      "source": "N027",
+      "target": "N010",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2998.200321,
+        "cost": 2998.200321
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E012",
-      "from": "N010",
-      "to": "N028",
-      "weight": 2611.292368,
+      "source": "N010",
+      "target": "N028",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2611.292368,
+        "cost": 2611.292368
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     },
     {
       "id": "E032",
-      "from": "N028",
-      "to": "N002",
-      "weight": 2778.210257,
+      "source": "N028",
+      "target": "N002",
+      "directed": false,
       "enabled": true,
-      "bidirectional": true,
-      "meta": {
-        "edge_kind": "group",
-        "group_color": "#4BDE8D"
+      "metrics": {
+        "length": 2778.210257,
+        "cost": 2778.210257
+      },
+      "properties": {},
+      "extensions": {
+        "route_graph_webui": {
+          "group_color": "#4BDE8D",
+          "edge_kind": "group"
+        }
       }
     }
   ],
-  "meta": {
-    "created_at": "2026-04-06T12:25:14",
-    "creator": "route_graph.graph_record",
-    "graph_gui_canvas_view_v1": {
-      "rotation_quadrants": 3,
-      "flip_horizontal": true,
-      "flip_vertical": false
+  "extensions": {
+    "uav": {
+      "env_id": "UnrealTrack-ModularBuilding-ContinuousColor-v0",
+      "default_altitude": null
     },
-    "group_configs_v1": {
-      "#4BDE8D": {
-        "altitude_mode": "fixed",
-        "fixed_z": "",
-        "altitude_offset": "0.0",
-        "node_sample_radius": "100.0",
-        "takeoff_landing_relative_z": "350",
-        "takeoff_landing_step_distance": "30"
+    "route_graph_webui": {
+      "created_at": "2026-04-06T12:25:14",
+      "creator": "route_graph.graph_record",
+      "graph_gui_canvas_view_v1": {
+        "rotation_quadrants": 3,
+        "flip_horizontal": true,
+        "flip_vertical": false
+      },
+      "group_configs_v1": {
+        "#4BDE8D": {
+          "altitude_mode": "fixed",
+          "fixed_z": "",
+          "altitude_offset": "0.0",
+          "node_sample_radius": "100.0",
+          "takeoff_landing_relative_z": "350",
+          "takeoff_landing_step_distance": "30"
+        }
+      },
+      "graph_gui_export_inputs_v1": {
+        "step_distance": "35.0",
+        "fps": "2.0",
+        "random_seed": "",
+        "corner_radius": "900.0",
+        "small_turn_yaw_blend_threshold_deg": "15.0",
+        "corner_min_angle_deg": "20.0",
+        "u_turn_threshold_deg": "150.0",
+        "u_turn_transition_distance": "240.0",
+        "corner_max_yaw_step_deg": "3.0",
+        "u_turn_pivot_yaw_step_deg": "2.5",
+        "turn_smoothing_enabled": true
+      },
+      "graph_gui_auto_plan_inputs_v1": {
+        "planning_mode": "auto",
+        "auto_max_output_routes": "600",
+        "auto_max_routes_per_pair": "300",
+        "auto_max_anchor_pairs_to_evaluate": "300",
+        "auto_distance_per_frame": "35.0",
+        "auto_min_total_length": "3000",
+        "auto_max_total_length": "60000",
+        "auto_min_frame_count": "300",
+        "auto_max_frame_count": "800",
+        "auto_min_endpoint_distance": "0",
+        "auto_max_search_states": "50000",
+        "auto_coverage_weight": "1.0",
+        "auto_diversity_weight": "0.45",
+        "auto_anchor_weight": "0.35",
+        "auto_reverse_penalty_weight": "0.2",
+        "auto_prefer_connected_anchors": true,
+        "auto_prefer_route_diversity": true,
+        "auto_allow_reverse_direction_counterparts": true,
+        "auto_enable_global_coverage": true,
+        "auto_allowed_route_group_colors": [],
+        "auto_excluded_endpoint_group_colors": []
       }
-    },
-    "graph_gui_export_inputs_v1": {
-      "step_distance": "35.0",
-      "fps": "2.0",
-      "random_seed": "",
-      "corner_radius": "900.0",
-      "small_turn_yaw_blend_threshold_deg": "15.0",
-      "corner_min_angle_deg": "20.0",
-      "u_turn_threshold_deg": "150.0",
-      "u_turn_transition_distance": "240.0",
-      "corner_max_yaw_step_deg": "3.0",
-      "u_turn_pivot_yaw_step_deg": "2.5",
-      "turn_smoothing_enabled": true
-    },
-    "graph_gui_auto_plan_inputs_v1": {
-      "planning_mode": "auto",
-      "auto_max_output_routes": "600",
-      "auto_max_routes_per_pair": "300",
-      "auto_max_anchor_pairs_to_evaluate": "300",
-      "auto_distance_per_frame": "35.0",
-      "auto_min_total_length": "3000",
-      "auto_max_total_length": "60000",
-      "auto_min_frame_count": "300",
-      "auto_max_frame_count": "800",
-      "auto_min_endpoint_distance": "0",
-      "auto_max_search_states": "50000",
-      "auto_coverage_weight": "1.0",
-      "auto_diversity_weight": "0.45",
-      "auto_anchor_weight": "0.35",
-      "auto_reverse_penalty_weight": "0.2",
-      "auto_prefer_connected_anchors": true,
-      "auto_prefer_route_diversity": true,
-      "auto_allow_reverse_direction_counterparts": true,
-      "auto_enable_global_coverage": true,
-      "auto_allowed_route_group_colors": [],
-      "auto_excluded_endpoint_group_colors": []
     }
   }
 }
